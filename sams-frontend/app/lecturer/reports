@@ -1,0 +1,126 @@
+export default function LecturerReportsPage() {
+  return (
+    <>
+      <header className="mb-xl flex justify-between items-end">
+        <div>
+          <h2 className="font-headline-lg text-headline-lg text-on-background">Attendance Reports</h2>
+          <p className="text-body-md font-body-md text-on-surface-variant">Generate and export attendance reports for your subjects.</p>
+        </div>
+        <button className="bg-primary text-on-primary px-lg py-md rounded-xl font-title-md text-title-md shadow-sm hover:bg-primary-container active:scale-95 transition-all flex items-center gap-sm">
+          <span className="material-symbols-outlined">download</span>
+          Export All
+        </button>
+      </header>
+
+      {/* Filter Section */}
+      <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl shadow-sm mb-xl flex flex-wrap gap-md items-end">
+        <div className="w-64 space-y-xs">
+          <label className="text-label-md text-on-surface-variant px-xs">Subject</label>
+          <select className="w-full bg-surface-container-low border-outline-variant rounded-lg text-body-md py-sm focus:ring-primary">
+            <option>All Subjects</option>
+            <option>SENG 31223 - Info Sys Security</option>
+            <option>SENG 32253 - Web Dev</option>
+          </select>
+        </div>
+        <div className="w-48 space-y-xs">
+          <label className="text-label-md text-on-surface-variant px-xs">Date Range</label>
+          <select className="w-full bg-surface-container-low border-outline-variant rounded-lg text-body-md py-sm focus:ring-primary">
+            <option>Last 30 Days</option>
+            <option>This Semester</option>
+            <option>Last Semester</option>
+            <option>Custom Range</option>
+          </select>
+        </div>
+        <button className="bg-surface-container-high text-on-surface px-lg py-sm rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-sm h-[42px]">
+          <span className="material-symbols-outlined">filter_list</span>
+          <span>Apply Filters</span>
+        </button>
+      </div>
+
+      {/* Report Table */}
+      <div className="bg-surface-container-lowest border border-outline-variant rounded-xl shadow-sm overflow-hidden">
+        <div className="p-lg border-b border-outline-variant flex justify-between items-center">
+          <h3 className="font-title-md text-title-md text-on-surface">Subject Summary</h3>
+        </div>
+        <div className="overflow-x-auto">
+          <table className="w-full text-left border-collapse">
+            <thead className="bg-surface-container-low">
+              <tr>
+                <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Subject Code &amp; Name</th>
+                <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Sessions Held</th>
+                <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Enrolled</th>
+                <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Avg. Attendance</th>
+                <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider text-right">Action</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-outline-variant">
+              <tr className="hover:bg-surface-container-low/50 transition-colors">
+                <td className="px-lg py-md">
+                  <div className="font-medium text-on-surface text-body-md">SENG 31223</div>
+                  <div className="text-body-sm text-on-surface-variant">Information Systems Security</div>
+                </td>
+                <td className="px-lg py-md text-body-md text-on-surface">12</td>
+                <td className="px-lg py-md text-body-md text-on-surface">120</td>
+                <td className="px-lg py-md">
+                  <div className="flex items-center gap-sm">
+                    <div className="w-full bg-surface-container-high rounded-full h-2 max-w-[100px]">
+                      <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '85%' }}></div>
+                    </div>
+                    <span className="text-body-sm font-medium">85%</span>
+                  </div>
+                </td>
+                <td className="px-lg py-md text-right">
+                  <button className="text-primary hover:bg-primary-container/20 p-2 rounded-lg transition-colors" title="Export Subject Report">
+                    <span className="material-symbols-outlined">download</span>
+                  </button>
+                </td>
+              </tr>
+              <tr className="hover:bg-surface-container-low/50 transition-colors">
+                <td className="px-lg py-md">
+                  <div className="font-medium text-on-surface text-body-md">SENG 32253</div>
+                  <div className="text-body-sm text-on-surface-variant">Advanced Web Development</div>
+                </td>
+                <td className="px-lg py-md text-body-md text-on-surface">10</td>
+                <td className="px-lg py-md text-body-md text-on-surface">150</td>
+                <td className="px-lg py-md">
+                  <div className="flex items-center gap-sm">
+                    <div className="w-full bg-surface-container-high rounded-full h-2 max-w-[100px]">
+                      <div className="bg-emerald-500 h-2 rounded-full" style={{ width: '92%' }}></div>
+                    </div>
+                    <span className="text-body-sm font-medium">92%</span>
+                  </div>
+                </td>
+                <td className="px-lg py-md text-right">
+                  <button className="text-primary hover:bg-primary-container/20 p-2 rounded-lg transition-colors" title="Export Subject Report">
+                    <span className="material-symbols-outlined">download</span>
+                  </button>
+                </td>
+              </tr>
+              <tr className="hover:bg-surface-container-low/50 transition-colors">
+                <td className="px-lg py-md">
+                  <div className="font-medium text-on-surface text-body-md">COSC 41122</div>
+                  <div className="text-body-sm text-on-surface-variant">Artificial Intelligence</div>
+                </td>
+                <td className="px-lg py-md text-body-md text-on-surface">8</td>
+                <td className="px-lg py-md text-body-md text-on-surface">85</td>
+                <td className="px-lg py-md">
+                  <div className="flex items-center gap-sm">
+                    <div className="w-full bg-surface-container-high rounded-full h-2 max-w-[100px]">
+                      <div className="bg-amber-500 h-2 rounded-full" style={{ width: '74%' }}></div>
+                    </div>
+                    <span className="text-body-sm font-medium">74%</span>
+                  </div>
+                </td>
+                <td className="px-lg py-md text-right">
+                  <button className="text-primary hover:bg-primary-container/20 p-2 rounded-lg transition-colors" title="Export Subject Report">
+                    <span className="material-symbols-outlined">download</span>
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </>
+  );
+}
