@@ -1,0 +1,276 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function DepartmentManagementPage() {
+  const [modalOpen, setModalOpen] = useState(false);
+
+  return (
+    <>
+      {/* Header / Top Bar */}
+      <header className="h-20 px-xl flex items-center justify-between bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/30 -mx-container-margin -mt-container-margin mb-xl">
+        <div>
+          <h2 className="font-headline-lg text-headline-lg text-on-surface">Department Management</h2>
+          <p className="text-body-sm font-body-sm text-on-surface-variant hidden sm:block">Organize and monitor academic units within the faculty.</p>
+        </div>
+        <div className="flex items-center gap-md">
+          <div className="relative group hidden md:block">
+            <span className="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-outline">search</span>
+            <input className="pl-10 pr-4 py-2 bg-surface-container border border-outline-variant rounded-xl text-body-sm focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent transition-all w-64" placeholder="Search departments..." type="text" />
+          </div>
+          <button 
+            className="flex items-center gap-sm bg-primary text-on-primary px-lg py-2.5 rounded-xl font-title-md text-title-md hover:bg-primary-container transition-colors active:scale-95 duration-200 whitespace-nowrap"
+            onClick={() => setModalOpen(true)}
+          >
+            <span className="material-symbols-outlined">add</span>
+            <span className="hidden sm:inline">New Department</span>
+            <span className="sm:hidden">New</span>
+          </button>
+        </div>
+      </header>
+
+      {/* Scrollable Content */}
+      <div className="space-y-xl pb-xl">
+        {/* Statistics Row */}
+        <div className="grid grid-cols-1 md:grid-cols-12 gap-lg">
+          <div className="md:col-span-8 bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm flex items-center justify-between relative overflow-hidden group hover:border-primary/30 transition-colors">
+            <div className="z-10">
+              <span className="text-label-md font-label-md text-primary uppercase tracking-wider">Total Overview</span>
+              <h3 className="text-display-lg font-display-lg text-on-surface mt-sm">12 <span className="text-headline-lg font-headline-lg text-on-surface-variant">Departments</span></h3>
+              <p className="text-body-sm font-body-sm text-on-surface-variant mt-xs">Active management across all computing disciplines.</p>
+            </div>
+            <div className="flex flex-col items-end gap-sm z-10 hidden sm:flex">
+              <div className="flex items-center gap-xs px-md py-2 bg-primary/10 text-primary rounded-full">
+                <span className="material-symbols-outlined text-[18px]">trending_up</span>
+                <span className="font-label-md text-label-md">+2 this semester</span>
+              </div>
+            </div>
+            {/* Decorative Background Element */}
+            <div className="absolute -right-12 -bottom-12 w-48 h-48 bg-primary/5 rounded-full blur-3xl group-hover:bg-primary/10 transition-colors"></div>
+          </div>
+          <div className="md:col-span-4 bg-primary text-on-primary p-lg rounded-xl shadow-sm flex flex-col justify-between min-h-[160px] relative overflow-hidden group">
+            <div className="absolute top-0 right-0 p-lg">
+              <span className="material-symbols-outlined text-4xl opacity-50 group-hover:rotate-12 transition-transform duration-500">diversity_3</span>
+            </div>
+            <div className="relative z-10 mt-auto">
+              <h4 className="font-title-md text-title-md">Faculty Headcount</h4>
+              <p className="text-display-lg font-display-lg">142</p>
+              <p className="text-body-sm font-body-sm opacity-80">Full-time teaching staff</p>
+            </div>
+          </div>
+        </div>
+
+        {/* Department Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-lg">
+          {/* Card 1 */}
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+            <div className="flex justify-between items-start mb-lg">
+              <div className="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-3xl">code</span>
+              </div>
+              <div className="flex gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="p-2 hover:bg-surface-container text-secondary rounded-lg transition-colors" title="Edit">
+                  <span className="material-symbols-outlined">edit</span>
+                </button>
+                <button className="p-2 hover:bg-error-container/20 text-error rounded-lg transition-colors" title="Delete">
+                  <span className="material-symbols-outlined">delete</span>
+                </button>
+              </div>
+            </div>
+            <h3 className="font-title-md text-title-md text-on-surface">Software Engineering</h3>
+            <div className="mt-md space-y-3">
+              <div className="flex items-center gap-md">
+                <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">CK</div>
+                <div>
+                  <p className="text-label-md font-label-md text-on-surface-variant">Head of Dept</p>
+                  <p className="text-body-sm font-body-sm font-semibold">Dr. Chaminda Kumara</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-md border-t border-outline-variant/30">
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">book</span>
+                  <span className="text-body-sm font-body-sm">24 Subjects</span>
+                </div>
+                <div class="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">group</span>
+                  <span className="text-body-sm font-body-sm">450 Students</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 2 */}
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+            <div className="flex justify-between items-start mb-lg">
+              <div className="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-3xl">psychology</span>
+              </div>
+              <div className="flex gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="p-2 hover:bg-surface-container text-secondary rounded-lg transition-colors"><span className="material-symbols-outlined">edit</span></button>
+                <button className="p-2 hover:bg-error-container/20 text-error rounded-lg transition-colors"><span className="material-symbols-outlined">delete</span></button>
+              </div>
+            </div>
+            <h3 className="font-title-md text-title-md text-on-surface">Data Science &amp; AI</h3>
+            <div className="mt-md space-y-3">
+              <div className="flex items-center gap-md">
+                <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">TS</div>
+                <div>
+                  <p className="text-label-md font-label-md text-on-surface-variant">Head of Dept</p>
+                  <p className="text-body-sm font-body-sm font-semibold">Prof. Thushari Silva</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-md border-t border-outline-variant/30">
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">book</span>
+                  <span className="text-body-sm font-body-sm">18 Subjects</span>
+                </div>
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">group</span>
+                  <span className="text-body-sm font-body-sm">320 Students</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 3 */}
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+            <div className="flex justify-between items-start mb-lg">
+              <div className="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-3xl">router</span>
+              </div>
+              <div className="flex gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="p-2 hover:bg-surface-container text-secondary rounded-lg transition-colors"><span className="material-symbols-outlined">edit</span></button>
+                <button className="p-2 hover:bg-error-container/20 text-error rounded-lg transition-colors"><span className="material-symbols-outlined">delete</span></button>
+              </div>
+            </div>
+            <h3 className="font-title-md text-title-md text-on-surface">Network Systems</h3>
+            <div className="mt-md space-y-3">
+              <div className="flex items-center gap-md">
+                <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">LG</div>
+                <div>
+                  <p className="text-label-md font-label-md text-on-surface-variant">Head of Dept</p>
+                  <p className="text-body-sm font-body-sm font-semibold">Dr. Lasith Gunawardena</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-md border-t border-outline-variant/30">
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">book</span>
+                  <span className="text-body-sm font-body-sm">15 Subjects</span>
+                </div>
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">group</span>
+                  <span className="text-body-sm font-body-sm">280 Students</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Card 4 */}
+          <div className="bg-surface-container-lowest border border-outline-variant p-lg rounded-xl hover:shadow-lg hover:-translate-y-1 transition-all duration-300 group flex flex-col">
+            <div className="flex justify-between items-start mb-lg">
+              <div className="w-12 h-12 rounded-lg bg-surface-container-high flex items-center justify-center text-primary">
+                <span className="material-symbols-outlined text-3xl">security</span>
+              </div>
+              <div className="flex gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <button className="p-2 hover:bg-surface-container text-secondary rounded-lg transition-colors"><span className="material-symbols-outlined">edit</span></button>
+                <button className="p-2 hover:bg-error-container/20 text-error rounded-lg transition-colors"><span className="material-symbols-outlined">delete</span></button>
+              </div>
+            </div>
+            <h3 className="font-title-md text-title-md text-on-surface">Information Security</h3>
+            <div className="mt-md space-y-3">
+              <div className="flex items-center gap-md">
+                <div className="w-8 h-8 rounded-full bg-secondary-container flex items-center justify-center text-on-secondary-container font-bold text-xs">MG</div>
+                <div>
+                  <p className="text-label-md font-label-md text-on-surface-variant">Head of Dept</p>
+                  <p className="text-body-sm font-body-sm font-semibold">Dr. Manori Gamage</p>
+                </div>
+              </div>
+              <div className="flex items-center justify-between pt-md border-t border-outline-variant/30">
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">book</span>
+                  <span className="text-body-sm font-body-sm">12 Subjects</span>
+                </div>
+                <div className="flex items-center gap-xs">
+                  <span className="material-symbols-outlined text-outline text-[18px]">group</span>
+                  <span className="text-body-sm font-body-sm">150 Students</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Add New Unit Card */}
+          <div 
+            onClick={() => setModalOpen(true)}
+            className="bg-surface-container border border-dashed border-outline-variant p-lg rounded-xl flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface-container-high transition-colors group min-h-[220px]"
+          >
+            <div className="w-14 h-14 rounded-full bg-primary/10 flex items-center justify-center text-primary mb-md group-hover:scale-110 transition-transform">
+              <span className="material-symbols-outlined text-3xl">add_business</span>
+            </div>
+            <h3 className="font-title-md text-title-md text-on-surface">Add New Unit</h3>
+            <p className="text-body-sm font-body-sm text-on-surface-variant max-w-[200px] mt-2">Expand the faculty by adding a new academic department.</p>
+          </div>
+        </div>
+      </div>
+
+      {/* Modal for Adding Department */}
+      {modalOpen && (
+        <div className="fixed inset-0 z-[60] flex items-center justify-center p-md">
+          <div 
+            className="absolute inset-0 bg-on-background/40 backdrop-blur-sm transition-opacity"
+            onClick={() => setModalOpen(false)}
+          ></div>
+          <div className="bg-surface-container-lowest w-full max-w-lg rounded-2xl shadow-2xl z-10 overflow-hidden relative border border-outline-variant animate-in fade-in zoom-in-95 duration-200">
+            <div className="p-lg border-b border-outline-variant flex justify-between items-center">
+              <h3 className="font-title-md text-title-md text-on-surface">New Department</h3>
+              <button 
+                className="p-2 hover:bg-surface-container rounded-full transition-colors" 
+                onClick={() => setModalOpen(false)}
+              >
+                <span className="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <div className="p-lg space-y-lg">
+              <div className="space-y-sm">
+                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Department Name</label>
+                <input className="w-full px-md py-3 bg-surface border border-outline-variant rounded-xl text-body-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all" placeholder="e.g. Artificial Intelligence" type="text" />
+              </div>
+              <div className="space-y-sm">
+                <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Head of Department</label>
+                <select className="w-full px-md py-3 bg-surface border border-outline-variant rounded-xl text-body-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none transition-all appearance-none">
+                  <option>Select Faculty Member</option>
+                  <option>Dr. Janaka Withanage</option>
+                  <option>Prof. Anuradha Jayasiri</option>
+                  <option>Dr. Saman Perera</option>
+                </select>
+              </div>
+              <div className="grid grid-cols-2 gap-md">
+                <div className="space-y-sm">
+                  <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Subjects</label>
+                  <input className="w-full px-md py-3 bg-surface border border-outline-variant rounded-xl text-body-md focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="0" type="number" />
+                </div>
+                <div className="space-y-sm">
+                  <label className="font-label-md text-label-md text-on-surface-variant uppercase tracking-wider">Dept Icon</label>
+                  <input className="w-full px-md py-3 bg-surface border border-outline-variant rounded-xl text-body-md focus:ring-2 focus:ring-primary outline-none transition-all" placeholder="Material Icon Name" type="text" />
+                </div>
+              </div>
+            </div>
+            <div className="p-lg bg-surface-container-low flex justify-end gap-md">
+              <button 
+                className="px-lg py-2.5 text-secondary font-title-md text-title-md hover:bg-surface-container transition-colors rounded-xl"
+                onClick={() => setModalOpen(false)}
+              >
+                Cancel
+              </button>
+              <button 
+                className="px-xl py-2.5 bg-primary text-on-primary font-title-md text-title-md rounded-xl hover:bg-primary-container shadow-md active:scale-95 transition-all"
+                onClick={() => setModalOpen(false)}
+              >
+                Create Department
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  );
+}
