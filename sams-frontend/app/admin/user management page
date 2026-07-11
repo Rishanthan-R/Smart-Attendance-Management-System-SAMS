@@ -1,0 +1,228 @@
+'use client';
+
+export default function UserManagementPage() {
+  return (
+    <>
+      {/* Header */}
+      <header className="h-16 bg-surface-container-lowest border-b border-outline-variant flex items-center justify-between px-xl sticky top-0 z-10 -mt-container-margin -mx-container-margin mb-lg">
+        <h1 className="text-headline-lg-mobile md:text-headline-lg text-on-surface">User Management</h1>
+        <button className="bg-primary text-on-primary px-lg py-sm rounded-lg flex items-center gap-sm hover:bg-primary-container transition-colors active:scale-95">
+          <span className="material-symbols-outlined">person_add</span>
+          <span className="text-body-md font-medium">Add New User</span>
+        </button>
+      </header>
+
+      <div className="space-y-lg">
+        {/* Search and Filter Bar */}
+        <div className="bg-surface-container-lowest p-md rounded-xl border border-outline-variant flex flex-wrap gap-md items-end shadow-sm">
+          <div className="flex-1 min-w-[240px] space-y-xs">
+            <label className="text-label-md text-on-surface-variant px-xs">Search</label>
+            <div className="relative">
+              <span className="material-symbols-outlined absolute left-md top-1/2 -translate-y-1/2 text-outline">search</span>
+              <input className="w-full pl-xl pr-md py-sm bg-surface-container-low border-outline-variant rounded-lg text-body-md focus:outline-none focus:ring-2 focus:ring-primary" placeholder="Name, email, or employee ID..." type="text" />
+            </div>
+          </div>
+          <div className="w-48 space-y-xs">
+            <label className="text-label-md text-on-surface-variant px-xs">Role</label>
+            <select className="w-full bg-surface-container-low border-none rounded-lg text-body-md py-sm focus:outline-none focus:ring-2 focus:ring-primary">
+              <option>All Roles</option>
+              <option>Admin</option>
+              <option>Faculty</option>
+              <option>Staff</option>
+              <option>IT Support</option>
+            </select>
+          </div>
+          <div className="w-48 space-y-xs">
+            <label className="text-label-md text-on-surface-variant px-xs">Department</label>
+            <select className="w-full bg-surface-container-low border-none rounded-lg text-body-md py-sm focus:outline-none focus:ring-2 focus:ring-primary">
+              <option>All Departments</option>
+              <option>Computer Science</option>
+              <option>Physics</option>
+              <option>Administration</option>
+              <option>Engineering</option>
+            </select>
+          </div>
+          <div className="w-40 space-y-xs">
+            <label className="text-label-md text-on-surface-variant px-xs">Status</label>
+            <select className="w-full bg-surface-container-low border-none rounded-lg text-body-md py-sm focus:outline-none focus:ring-2 focus:ring-primary">
+              <option>All Statuses</option>
+              <option>Active</option>
+              <option>Pending</option>
+              <option>Deactivated</option>
+            </select>
+          </div>
+          <button className="bg-surface-container-high text-on-surface px-lg py-sm rounded-lg hover:bg-surface-variant transition-colors flex items-center gap-sm h-[42px] active:scale-95">
+            <span className="material-symbols-outlined">filter_list</span>
+            <span>Filters</span>
+          </button>
+        </div>
+
+        {/* Data Table */}
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant overflow-hidden shadow-sm">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="bg-surface-container-low border-b border-outline-variant">
+                  <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">User</th>
+                  <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Role</th>
+                  <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Department</th>
+                  <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider">Status</th>
+                  <th className="px-lg py-md text-label-md font-semibold text-on-surface-variant uppercase tracking-wider text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant">
+                {/* Row 1 */}
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-md">
+                      <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-medium">AB</div>
+                      <div>
+                        <div className="text-body-md font-medium text-on-surface">Alice Brown</div>
+                        <div className="text-body-sm text-on-surface-variant">alice.brown@sams.edu</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Faculty</td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Computer Science</td>
+                  <td className="px-lg py-md">
+                    <span className="inline-flex items-center px-sm py-xs rounded-full bg-green-100 text-green-800 text-label-md font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-600 mr-sm"></span>
+                      Active
+                    </span>
+                  </td>
+                  <td className="px-lg py-md text-right">
+                    <div className="flex items-center justify-end gap-sm">
+                      <button className="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors" title="Edit">
+                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                      </button>
+                      <button className="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors" title="Deactivate">
+                        <span className="material-symbols-outlined text-[20px]">block</span>
+                      </button>
+                      <button className="p-sm text-on-surface-variant hover:bg-error-container hover:text-error rounded-lg transition-colors" title="Delete">
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {/* Row 2 */}
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-md">
+                      <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-medium">MC</div>
+                      <div>
+                        <div className="text-body-md font-medium text-on-surface">Mark Chen</div>
+                        <div className="text-body-sm text-on-surface-variant">m.chen@sams.edu</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Staff</td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Administration</td>
+                  <td className="px-lg py-md">
+                    <span className="inline-flex items-center px-sm py-xs rounded-full bg-amber-100 text-amber-800 text-label-md font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-amber-600 mr-sm"></span>
+                      Pending
+                    </span>
+                  </td>
+                  <td className="px-lg py-md text-right">
+                    <div className="flex items-center justify-end gap-sm">
+                      <button className="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors" title="Edit">
+                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                      </button>
+                      <button className="p-sm text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Approve">
+                        <span className="material-symbols-outlined text-[20px]">check_circle</span>
+                      </button>
+                      <button className="p-sm text-on-surface-variant hover:bg-error-container hover:text-error rounded-lg transition-colors" title="Delete">
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {/* Row 3 */}
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-md">
+                      <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-medium">SJ</div>
+                      <div>
+                        <div className="text-body-md font-medium text-on-surface">Sarah Johnson</div>
+                        <div className="text-body-sm text-on-surface-variant">s.johnson@sams.edu</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-body-md text-on-surface">IT Support</td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Infrastructure</td>
+                  <td className="px-lg py-md">
+                    <span className="inline-flex items-center px-sm py-xs rounded-full bg-red-100 text-red-800 text-label-md font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-red-600 mr-sm"></span>
+                      Deactivated
+                    </span>
+                  </td>
+                  <td className="px-lg py-md text-right">
+                    <div className="flex items-center justify-end gap-sm">
+                      <button className="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors" title="Edit">
+                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                      </button>
+                      <button className="p-sm text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Reactivate">
+                        <span className="material-symbols-outlined text-[20px]">restore_from_trash</span>
+                      </button>
+                      <button className="p-sm text-on-surface-variant hover:bg-error-container hover:text-error rounded-lg transition-colors" title="Delete">
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+                {/* Row 4 */}
+                <tr className="hover:bg-surface-container-low/50 transition-colors">
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-md">
+                      <div className="w-10 h-10 rounded-full bg-surface-container-high flex items-center justify-center text-primary font-medium">RW</div>
+                      <div>
+                        <div className="text-body-md font-medium text-on-surface">Robert White</div>
+                        <div className="text-body-sm text-on-surface-variant">r.white@sams.edu</div>
+                      </div>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Admin</td>
+                  <td className="px-lg py-md text-body-md text-on-surface">Finance</td>
+                  <td className="px-lg py-md">
+                    <span className="inline-flex items-center px-sm py-xs rounded-full bg-green-100 text-green-800 text-label-md font-semibold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-green-600 mr-sm"></span>
+                      Active
+                    </span>
+                  </td>
+                  <td className="px-lg py-md text-right">
+                    <div className="flex items-center justify-end gap-sm">
+                      <button className="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors" title="Edit">
+                        <span className="material-symbols-outlined text-[20px]">edit</span>
+                      </button>
+                      <button className="p-sm text-on-surface-variant hover:bg-surface-container rounded-lg transition-colors" title="Deactivate">
+                        <span className="material-symbols-outlined text-[20px]">block</span>
+                      </button>
+                      <button className="p-sm text-on-surface-variant hover:bg-error-container hover:text-error rounded-lg transition-colors" title="Delete">
+                        <span className="material-symbols-outlined text-[20px]">delete</span>
+                      </button>
+                    </div>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {/* Pagination Footer */}
+          <div className="bg-surface-container-low px-lg py-md border-t border-outline-variant flex items-center justify-between">
+            <span className="text-body-sm text-on-surface-variant">Showing 1 to 4 of 24 users</span>
+            <div className="flex items-center gap-xs">
+              <button className="p-xs text-on-surface-variant hover:bg-surface-container rounded disabled:opacity-30" disabled>
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button className="w-8 h-8 rounded bg-primary text-on-primary text-body-sm font-medium">1</button>
+              <button className="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant text-body-sm">2</button>
+              <button className="w-8 h-8 rounded hover:bg-surface-container text-on-surface-variant text-body-sm">3</button>
+              <button className="p-xs text-on-surface-variant hover:bg-surface-container rounded">
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </>
+  );
+}
