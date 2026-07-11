@@ -1,0 +1,328 @@
+'use client';
+
+import { useState } from 'react';
+
+export default function SubjectManagementPage() {
+  const [panelMode, setPanelMode] = useState(null); // 'create' | 'assign' | null
+
+  const closePanel = () => setPanelMode(null);
+
+  return (
+    <div className="relative h-full">
+      {/* Header / Top Bar */}
+      <header className="h-20 flex items-center justify-between bg-surface-container-lowest/80 backdrop-blur-md sticky top-0 z-40 border-b border-outline-variant/30 -mx-container-margin -mt-container-margin mb-xl px-container-margin">
+        <div className="flex items-center gap-md">
+          <h2 className="font-title-md text-title-md text-primary">Subject Management</h2>
+        </div>
+        <div className="flex items-center gap-lg">
+          <div className="relative hidden md:block">
+            <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-outline">
+              <span className="material-symbols-outlined text-[20px]">search</span>
+            </span>
+            <input className="bg-surface-container-low border-none rounded-full py-2 pl-10 pr-4 text-body-sm w-64 focus:ring-2 focus:ring-primary focus:outline-none" placeholder="Search subjects..." type="text" />
+          </div>
+          <button 
+            onClick={() => setPanelMode('create')}
+            className="bg-primary text-on-primary px-lg py-sm rounded-lg font-title-md text-[14px] flex items-center gap-sm active:scale-95 transition-transform"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
+            New Subject
+          </button>
+        </div>
+      </header>
+
+      {/* Main Workspace */}
+      <div className="space-y-xl pb-xl">
+        {/* Stats Bento Row */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-lg">
+          <div className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-md">
+              <div className="p-sm bg-primary-container/10 rounded-lg text-primary">
+                <span className="material-symbols-outlined">auto_stories</span>
+              </div>
+              <span className="text-label-md text-on-surface-variant">+4 this sem</span>
+            </div>
+            <h3 className="text-label-md text-secondary uppercase tracking-wider">Total Subjects</h3>
+            <p className="font-headline-lg text-headline-lg text-on-surface">42</p>
+          </div>
+          
+          <div className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-md">
+              <div className="p-sm bg-tertiary-container/10 rounded-lg text-tertiary">
+                <span className="material-symbols-outlined">groups</span>
+              </div>
+              <span className="text-label-md text-on-surface-variant">98% allocated</span>
+            </div>
+            <h3 className="text-label-md text-secondary uppercase tracking-wider">Lecturers</h3>
+            <p className="font-headline-lg text-headline-lg text-on-surface">18</p>
+          </div>
+          
+          <div className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-md">
+              <div className="p-sm bg-error-container/10 rounded-lg text-error">
+                <span className="material-symbols-outlined">warning</span>
+              </div>
+              <span className="text-label-md text-error">Needs Attention</span>
+            </div>
+            <h3 className="text-label-md text-secondary uppercase tracking-wider">Unassigned</h3>
+            <p className="font-headline-lg text-headline-lg text-on-surface">02</p>
+          </div>
+          
+          <div className="bg-surface-container-lowest p-lg rounded-xl border border-outline-variant shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex justify-between items-start mb-md">
+              <div className="p-sm bg-secondary-container/10 rounded-lg text-secondary">
+                <span className="material-symbols-outlined">verified</span>
+              </div>
+              <span className="text-label-md text-on-surface-variant">Current Cycle</span>
+            </div>
+            <h3 className="text-label-md text-secondary uppercase tracking-wider">Status</h3>
+            <p className="font-headline-lg text-headline-lg text-on-surface">Active</p>
+          </div>
+        </div>
+
+        {/* Table Section */}
+        <div className="bg-surface-container-lowest rounded-xl border border-outline-variant shadow-sm overflow-hidden">
+          <div className="p-lg border-b border-outline-variant flex justify-between items-center">
+            <h3 className="font-title-md text-title-md">Academic Subjects</h3>
+            <div className="flex gap-md">
+              <button className="flex items-center gap-xs px-md py-sm border border-outline-variant rounded-lg text-body-sm hover:bg-surface-container-low transition-colors">
+                <span className="material-symbols-outlined text-[18px]">filter_list</span>
+                Filter
+              </button>
+              <button className="flex items-center gap-xs px-md py-sm border border-outline-variant rounded-lg text-body-sm hover:bg-surface-container-low transition-colors hidden sm:flex">
+                <span className="material-symbols-outlined text-[18px]">file_download</span>
+                Export
+              </button>
+            </div>
+          </div>
+          <div className="overflow-x-auto">
+            <table className="w-full text-left border-collapse min-w-[800px]">
+              <thead className="bg-surface-container-low">
+                <tr>
+                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant">SUBJECT CODE</th>
+                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant">NAME</th>
+                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant">DEPARTMENT</th>
+                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant">LECTURER ASSIGNED</th>
+                  <th className="px-lg py-md text-label-md font-label-md text-on-surface-variant text-right">ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-outline-variant">
+                {/* Row 1 */}
+                <tr className="hover:bg-surface-container transition-colors group">
+                  <td className="px-lg py-md font-mono text-body-sm text-primary font-bold">CSC 3102</td>
+                  <td className="px-lg py-md">
+                    <div className="font-title-md text-[15px] text-on-surface">Human Computer Interaction</div>
+                    <div className="text-body-sm text-secondary">Credits: 3.0 | Level 3</div>
+                  </td>
+                  <td className="px-lg py-md">
+                    <span className="bg-secondary-container text-on-secondary-container px-sm py-xs rounded-full text-[12px] font-bold">Computer Science</span>
+                  </td>
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-sm">
+                      <div className="w-8 h-8 rounded-full bg-tertiary-container text-on-tertiary-container flex items-center justify-center text-[10px] font-bold">JD</div>
+                      <span className="text-body-sm text-on-surface">Dr. Jane Dissanayake</span>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-right space-x-2">
+                    <button onClick={() => setPanelMode('assign')} className="p-sm text-secondary hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Assign Lecturer">
+                      <span className="material-symbols-outlined text-[20px]">person_add</span>
+                    </button>
+                    <button className="p-sm text-secondary hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Edit">
+                      <span className="material-symbols-outlined text-[20px]">edit</span>
+                    </button>
+                    <button className="p-sm text-secondary hover:text-error hover:bg-error-container/10 rounded-lg transition-colors" title="Delete">
+                      <span className="material-symbols-outlined text-[20px]">delete</span>
+                    </button>
+                  </td>
+                </tr>
+                {/* Row 2 */}
+                <tr className="hover:bg-surface-container transition-colors group">
+                  <td className="px-lg py-md font-mono text-body-sm text-primary font-bold">MAT 1105</td>
+                  <td className="px-lg py-md">
+                    <div className="font-title-md text-[15px] text-on-surface">Calculus I</div>
+                    <div className="text-body-sm text-secondary">Credits: 4.0 | Level 1</div>
+                  </td>
+                  <td className="px-lg py-md">
+                    <span className="bg-surface-container-highest text-on-surface-variant px-sm py-xs rounded-full text-[12px] font-bold">Mathematics</span>
+                  </td>
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-sm">
+                      <div className="w-8 h-8 rounded-full border-2 border-dashed border-outline-variant flex items-center justify-center text-outline">
+                        <span className="material-symbols-outlined text-[16px]">person</span>
+                      </div>
+                      <span className="text-body-sm italic text-outline">Unassigned</span>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-right space-x-2">
+                    <button onClick={() => setPanelMode('assign')} className="p-sm text-primary bg-primary-container/20 rounded-lg transition-colors animate-pulse hover:bg-primary-container/30" title="Assign Lecturer">
+                      <span className="material-symbols-outlined text-[20px]">person_add</span>
+                    </button>
+                    <button className="p-sm text-secondary hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Edit">
+                      <span className="material-symbols-outlined text-[20px]">edit</span>
+                    </button>
+                    <button className="p-sm text-secondary hover:text-error hover:bg-error-container/10 rounded-lg transition-colors" title="Delete">
+                      <span className="material-symbols-outlined text-[20px]">delete</span>
+                    </button>
+                  </td>
+                </tr>
+                {/* Row 3 */}
+                <tr className="hover:bg-surface-container transition-colors group">
+                  <td className="px-lg py-md font-mono text-body-sm text-primary font-bold">ITC 2105</td>
+                  <td className="px-lg py-md">
+                    <div className="font-title-md text-[15px] text-on-surface">Network Fundamentals</div>
+                    <div className="text-body-sm text-secondary">Credits: 3.0 | Level 2</div>
+                  </td>
+                  <td className="px-lg py-md">
+                    <span className="bg-secondary-container text-on-secondary-container px-sm py-xs rounded-full text-[12px] font-bold">Information Tech</span>
+                  </td>
+                  <td className="px-lg py-md">
+                    <div className="flex items-center gap-sm">
+                      <div className="w-8 h-8 rounded-full bg-on-tertiary-fixed-variant text-white flex items-center justify-center text-[10px] font-bold">KP</div>
+                      <span className="text-body-sm text-on-surface">Prof. K. Perera</span>
+                    </div>
+                  </td>
+                  <td className="px-lg py-md text-right space-x-2">
+                    <button onClick={() => setPanelMode('assign')} className="p-sm text-secondary hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Assign Lecturer">
+                      <span className="material-symbols-outlined text-[20px]">person_add</span>
+                    </button>
+                    <button className="p-sm text-secondary hover:text-primary hover:bg-primary-container/10 rounded-lg transition-colors" title="Edit">
+                      <span className="material-symbols-outlined text-[20px]">edit</span>
+                    </button>
+                    <button className="p-sm text-secondary hover:text-error hover:bg-error-container/10 rounded-lg transition-colors" title="Delete">
+                      <span className="material-symbols-outlined text-[20px]">delete</span>
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          {/* Pagination */}
+          <div className="p-lg flex justify-between items-center bg-surface-container-low/50">
+            <span className="text-body-sm text-on-surface-variant hidden sm:inline-block">Showing 1 to 10 of 42 entries</span>
+            <div className="flex items-center gap-xs">
+              <button className="p-sm rounded-lg hover:bg-surface-container-high transition-colors text-outline">
+                <span className="material-symbols-outlined">chevron_left</span>
+              </button>
+              <button className="w-8 h-8 rounded-lg bg-primary text-on-primary text-body-sm font-bold">1</button>
+              <button className="w-8 h-8 rounded-lg hover:bg-surface-container-high text-body-sm text-on-surface">2</button>
+              <button className="w-8 h-8 rounded-lg hover:bg-surface-container-high text-body-sm text-on-surface">3</button>
+              <button className="p-sm rounded-lg hover:bg-surface-container-high transition-colors text-on-surface">
+                <span className="material-symbols-outlined">chevron_right</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Side Panel Overlay */}
+      {panelMode && (
+        <div 
+          className="fixed inset-0 bg-on-background/40 backdrop-blur-sm z-[55] transition-opacity duration-300" 
+          onClick={closePanel}
+        ></div>
+      )}
+
+      {/* Right Side Panel */}
+      <div 
+        className={`fixed right-0 top-0 h-full w-full max-w-[450px] bg-surface-container-lowest shadow-2xl z-[60] border-l border-outline-variant flex flex-col transition-transform duration-300 ${panelMode ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        <div className="p-lg border-b border-outline-variant flex justify-between items-center">
+          <h3 className="font-headline-lg-mobile text-headline-lg-mobile text-primary">
+            {panelMode === 'create' ? 'Add New Subject' : 'Assign Lecturer'}
+          </h3>
+          <button className="p-sm hover:bg-surface-container-low rounded-full transition-colors" onClick={closePanel}>
+            <span className="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div className="flex-grow p-xl overflow-y-auto space-y-xl">
+          {/* Create Subject Form */}
+          {panelMode === 'create' && (
+            <div className="space-y-lg">
+              <div className="space-y-sm">
+                <label className="text-label-md text-on-surface-variant uppercase">Subject Code</label>
+                <input className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all" placeholder="e.g. CSC 3102" type="text" />
+              </div>
+              <div className="space-y-sm">
+                <label className="text-label-md text-on-surface-variant uppercase">Subject Name</label>
+                <input className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all" placeholder="e.g. Advanced Algorithms" type="text" />
+              </div>
+              <div className="grid grid-cols-2 gap-md">
+                <div className="space-y-sm">
+                  <label className="text-label-md text-on-surface-variant uppercase">Department</label>
+                  <select className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all">
+                    <option>Computer Science</option>
+                    <option>Mathematics</option>
+                    <option>IT</option>
+                  </select>
+                </div>
+                <div className="space-y-sm">
+                  <label className="text-label-md text-on-surface-variant uppercase">Credits</label>
+                  <input className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all" placeholder="3.0" step="0.5" type="number" />
+                </div>
+              </div>
+              <div className="space-y-sm">
+                <label className="text-label-md text-on-surface-variant uppercase">Description</label>
+                <textarea className="w-full bg-surface-container-low border border-outline-variant rounded-lg p-md focus:ring-2 focus:ring-primary focus:border-primary focus:outline-none transition-all" placeholder="Brief overview of the curriculum..." rows="4"></textarea>
+              </div>
+            </div>
+          )}
+
+          {/* Assign Lecturer View */}
+          {panelMode === 'assign' && (
+            <div className="space-y-lg">
+              <div className="p-md bg-primary-container/10 rounded-xl border border-primary-container/20 flex items-center gap-md">
+                <div className="p-sm bg-primary text-on-primary rounded-lg flex items-center justify-center">
+                  <span className="material-symbols-outlined">info</span>
+                </div>
+                <div>
+                  <h4 className="text-body-sm font-bold text-primary">Assigning for MAT 1105</h4>
+                  <p className="text-label-md text-on-primary-fixed-variant">Select an available faculty member</p>
+                </div>
+              </div>
+              <div className="space-y-sm">
+                <label className="text-label-md text-on-surface-variant uppercase">Search Faculty</label>
+                <div className="relative">
+                  <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-outline">
+                    <span className="material-symbols-outlined text-[20px]">search</span>
+                  </span>
+                  <input className="w-full bg-surface-container-low border border-outline-variant rounded-lg py-md pl-10 pr-4 focus:ring-2 focus:ring-primary focus:outline-none transition-all" placeholder="Lecturer name or ID..." type="text" />
+                </div>
+              </div>
+              <div className="space-y-md">
+                <label className="text-label-md text-on-surface-variant uppercase">Recommended Lecturers</label>
+                
+                <div className="p-md bg-surface-container-low border border-outline-variant rounded-xl flex items-center gap-md hover:border-primary cursor-pointer transition-colors group">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-outline-variant flex items-center justify-center bg-surface-container-highest">
+                    <span className="material-symbols-outlined text-secondary">person</span>
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="text-body-sm font-bold group-hover:text-primary">Dr. Sarah Wijesinghe</h4>
+                    <p className="text-label-md text-secondary">Specialization: Analysis</p>
+                  </div>
+                  <span className="material-symbols-outlined text-outline group-hover:text-primary">radio_button_unchecked</span>
+                </div>
+                
+                <div className="p-md bg-surface-container-low border border-outline-variant rounded-xl flex items-center gap-md hover:border-primary cursor-pointer transition-colors group">
+                  <div className="w-12 h-12 rounded-full overflow-hidden border border-outline-variant flex items-center justify-center bg-surface-container-highest">
+                    <span className="material-symbols-outlined text-secondary">person</span>
+                  </div>
+                  <div className="flex-grow">
+                    <h4 className="text-body-sm font-bold group-hover:text-primary">Prof. Ananda Silva</h4>
+                    <p className="text-label-md text-secondary">Specialization: Statistics</p>
+                  </div>
+                  <span className="material-symbols-outlined text-outline group-hover:text-primary">radio_button_unchecked</span>
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+        <div className="p-lg border-t border-outline-variant bg-surface-container-low/30 grid grid-cols-2 gap-md mt-auto">
+          <button className="px-lg py-md border border-outline-variant rounded-lg text-on-surface-variant font-bold hover:bg-surface-container-low transition-colors" onClick={closePanel}>Cancel</button>
+          <button className="px-lg py-md bg-primary text-on-primary rounded-lg font-bold hover:bg-primary-container transition-colors shadow-md shadow-primary/20" onClick={closePanel}>
+            {panelMode === 'create' ? 'Create Subject' : 'Confirm Assignment'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
