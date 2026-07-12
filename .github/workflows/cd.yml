@@ -1,0 +1,32 @@
+name: CD — Deploy to Production
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-and-deploy:
+    name: Build Docker Images & Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build Frontend Docker Image
+        run: |
+          docker build -t sams-frontend:latest ./sams-frontend
+          echo "Frontend image built successfully"
+
+      - name: Build Backend Docker Image
+        run: |
+          docker build -t sams-backend:latest ./sams-backend
+          echo "Backend image built successfully"
+
+      - name: Deployment Step
+        run: |
+          echo "Configure deployment target here (Vercel, Render, AWS, etc.)"
+          echo "Add platform-specific credentials to GitHub Secrets and update this step."
