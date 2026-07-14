@@ -53,7 +53,8 @@ export default function LoginPage() {
             const destination =
                 data.role === "lecturer" ? "/dashboard/lecturer" : "/dashboard/student";
             router.push(destination);
-        } catch (err) {
+        } catch (error) {
+            console.error(error);
             setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
@@ -91,7 +92,7 @@ export default function LoginPage() {
                         name="identifier"
                         type="text"
                         autoComplete="username"
-                        placeholder={role === "lecturer" ? "e.g. j.perera@sjp.ac.lk" : "e.g. sc21123@sjp.ac.lk"}
+                        placeholder={role === "lecturer" ? "e.g. j.perera@sjp.ac.lk" : "e.g. fc111234@sjp.ac.lk"}
                         className="form-input"
                         value={form.identifier}
                         onChange={handleChange}
@@ -135,7 +136,7 @@ export default function LoginPage() {
             </form>
 
             <p className="auth-switch">
-                Don't have an account? <Link href="/auth/register">Create one</Link>
+                Don&apos;t have an account? <Link href="/auth/register">Create one</Link>
             </p>
         </AuthShell>
     );

@@ -59,8 +59,9 @@ export default function RegisterPage() {
                 return;
             }
 
-            router.push("/login");
-        } catch (err) {
+            router.push("/auth/login");
+        } catch (error) {
+            console.error(error);
             setError("Something went wrong. Please try again.");
         } finally {
             setLoading(false);
@@ -113,7 +114,7 @@ export default function RegisterPage() {
                             id={role === "lecturer" ? "staffId" : "regNumber"}
                             name={role === "lecturer" ? "staffId" : "regNumber"}
                             type="text"
-                            placeholder={role === "lecturer" ? "e.g. FOC/L/0042" : "e.g. SC/2022/00123"}
+                            placeholder={role === "lecturer" ? "e.g. FOC/L/0042" : "e.g. FC111234"}
                             className="form-input"
                             value={role === "lecturer" ? form.staffId : form.regNumber}
                             onChange={handleChange}
@@ -131,7 +132,7 @@ export default function RegisterPage() {
                         name="email"
                         type="email"
                         autoComplete="email"
-                        placeholder={role === "lecturer" ? "e.g. j.perera@sjp.ac.lk" : "e.g. sc21123@sjp.ac.lk"}
+                        placeholder={role === "lecturer" ? "e.g. j.perera@sjp.ac.lk" : "e.g. fc111234@sjp.ac.lk"}
                         className="form-input"
                         value={form.email}
                         onChange={handleChange}

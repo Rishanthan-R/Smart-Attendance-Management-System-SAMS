@@ -1,7 +1,6 @@
 "use client";
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 
 /* ─── SVG Icon Components ────────────────────────────────────────── */
 function IconLocation({ size = 18 }) {
