@@ -51,7 +51,7 @@ export default function LoginPage() {
 
             // The backend returns the verified role — always trust this over roleHint.
             const destination =
-                data.role === "lecturer" ? "/dashboard/lecturer" : "/dashboard/student";
+                data.role === "lecturer" ? "/lecturer" : "/student";
             router.push(destination);
         } catch (error) {
             console.error(error);
