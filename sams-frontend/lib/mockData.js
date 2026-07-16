@@ -147,3 +147,14 @@ export const ATTENDANCE_NOTIFICATIONS = [
   { id: 1, type: "info",    title: "CS-402 session is now active. Submit attendance.", time: "Just now"  },
   { id: 2, type: "success", title: "Attendance confirmed for Operating Systems.",       time: "Yesterday" },
 ];
+
+/* ── Student-Profile-page mock data below ── */
+/* Seed activity log — replace with a real fetch from your API endpoint.*/
+
+export const ACTIVITY_LOG = [
+  { action: "Attendance marked", detail: "CS-202 — Data Structures",          time: "Today, 14:02",  type: "success" },
+  { action: "Password changed",  detail: "Security settings updated",          time: "Jul 9, 10:20",  type: "info"    },
+  { action: "Profile updated",   detail: "Phone number changed",               time: "Jul 7, 09:15",  type: "info"    },
+  { action: "Attendance marked", detail: "IS-210 — Database Systems",          time: "Jul 6, 13:04",  type: "success" },
+  { action: "Login detected",    detail: "New device — Chrome / Windows",      time: "Jul 5, 08:47",  type: "warning" },
+];
