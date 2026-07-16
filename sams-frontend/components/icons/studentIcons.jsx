@@ -177,3 +177,4 @@ export function IconSave({ size = 16 }) {
       <polyline points="7,3 7,8 15,8" />
     </svg>
   );
+}
