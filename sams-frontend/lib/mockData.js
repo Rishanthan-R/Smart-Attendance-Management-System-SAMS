@@ -158,3 +158,53 @@ export const ACTIVITY_LOG = [
   { action: "Attendance marked", detail: "IS-210 — Database Systems",          time: "Jul 6, 13:04",  type: "success" },
   { action: "Login detected",    detail: "New device — Chrome / Windows",      time: "Jul 5, 08:47",  type: "warning" },
 ];
+
+/*course page*/
+/* ── Courses the student is currently enrolled in ────────────────────────── */
+export const ENROLLED_COURSES_CP = [
+  {
+    code: "CS-301", name: "Data Structures & Algorithms", instructor: "Dr. Aris Thorne",
+    credits: 3, schedule: "Mon / Wed · 09:00–10:30", hall: "Lab 2B",
+    attendance: 92, attended: 22, total: 24, status: "excellent",
+    icon: "⬡", color: "#b8965a",
+    nextSession: "Today, 09:00 AM",
+  },
+  {
+    code: "CS-302", name: "Software Engineering", instructor: "Prof. Elena Rodriguez",
+    credits: 3, schedule: "Tue / Thu · 11:00–12:30", hall: "Hall A-104",
+    attendance: 88, attended: 21, total: 24, status: "good",
+    icon: "◈", color: "#8a6e3a",
+    nextSession: "Tomorrow, 11:00 AM",
+  },
+  {
+    code: "CS-305", name: "Computer Networks", instructor: "Dr. Marcus Vane",
+    credits: 3, schedule: "Mon / Fri · 14:00–15:30", hall: "Lab 3C",
+    attendance: 75, attended: 18, total: 24, status: "warning",
+    icon: "◎", color: "#d97706",
+    nextSession: "Friday, 14:00",
+  },
+  {
+    code: "MA-204", name: "Probability & Statistics", instructor: "Prof. Sarah Jenkins",
+    credits: 4, schedule: "Tue / Thu · 08:00–09:30", hall: "Hall B-201",
+    attendance: 95, attended: 23, total: 24, status: "excellent",
+    icon: "∑", color: "#b8965a",
+    nextSession: "Thursday, 08:00 AM",
+  },
+  {
+    code: "CS-308", name: "Database Systems", instructor: "Dr. Julian O'Neill",
+    credits: 3, schedule: "Wed / Fri · 13:00–14:30", hall: "Lab 1A",
+    attendance: 82, attended: 20, total: 24, status: "good",
+    icon: "◉", color: "#8a6e3a",
+    nextSession: "Wednesday, 13:00",
+  },
+];
+
+/* ── Courses available for enrollment this semester ──────────────────────── */
+export const CATALOG_COURSES_CP = [
+  { code: "CS-401", name: "Machine Learning Fundamentals", instructor: "Dr. Priya Nair",  credits: 4, seats: 3  },
+  { code: "CS-410", name: "Cloud Computing",               instructor: "Prof. Ben Hartley", credits: 3, seats: 12 },
+  { code: "IS-305", name: "Information Security",          instructor: "Dr. Ashan Perera", credits: 3, seats: 7  },
+];
+
+
+
