@@ -26,7 +26,7 @@ export default function LecturerNavbar() {
   const navItems = [
     { label: "Dashboard", href: "/lecturer" },
     { label: "Sessions", href: "/lecturer/sessions" },
-    { label: "Live Feed", href: "/lecturer/attendance-history" },
+    { label: "Records", href: "/lecturer/attendance-history" },
     { label: "Reports", href: "/lecturer/reports" },
   ];
 
