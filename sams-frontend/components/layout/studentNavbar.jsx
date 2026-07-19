@@ -3,19 +3,17 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import {
-  IconGrid, IconBook, IconCalendar, IconClock, IconUser,
-  IconBell, IconSettings, IconLogOut, IconSearch, IconChevronDown,
+  IconGrid, IconBook, IconCalendar, IconClock,
+  IconBell, IconLogOut,
   IconAlertCircle, IconInfo, IconCheckCircle, IconX,
 } from "../../components/icons/studentIcons";
 
-/* Nav links live here (rather than a shared /lib/constants file)
-   because they're only ever consumed by the Navbar itself. */
+/* Nav links — Profile removed; clicking the profile avatar goes to /student/profile */
 export const NAV_ITEMS = [
   { id: "dashboard",  label: "Dashboard",  icon: <IconGrid size={17} />,     href: "/student/dashboard" },
   { id: "courses",    label: "Courses",    icon: <IconBook size={17} />,     href: "/student/courses" },
   { id: "attendance", label: "Attendance", icon: <IconCalendar size={17} />, href: "/student/attendance" },
-  { id: "history",    label: "History",    icon: <IconClock size={17} />,   href: "/student/history" },
-  { id: "profile",    label: "Profile",    icon: <IconUser size={17} />,     href: "/student/profile" },
+  { id: "history",    label: "History",    icon: <IconClock size={17} />,    href: "/student/history" },
 ];
 
 const NOTIF_STYLES = {
@@ -25,21 +23,20 @@ const NOTIF_STYLES = {
 };
 
 export function Navbar({ activeNav, notifications = [], setNotifications, yearOfStudy = "Year 3" }) {
-  const [profileOpen, setProfileOpen] = useState(false);
   const [notifOpen, setNotifOpen] = useState(false);
-  const profileRef = useRef(null);
   const notifRef = useRef(null);
 
-  useOutsideClick(profileRef, () => setProfileOpen(false));
   useOutsideClick(notifRef, () => setNotifOpen(false));
 
   return (
     <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, height: 64, background: "rgba(250,247,242,0.96)", backdropFilter: "blur(14px)", borderBottom: "1px solid var(--border,rgba(26,23,20,0.10))", display: "flex", alignItems: "center", padding: "0 32px", gap: 0 }}>
-      <div style={{ display: "flex", alignItems: "center", gap: 10, marginRight: 40 }}>
+      {/* ── Brand ── */}
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginRight: 40, lineHeight: 1 }}>
         <span style={{ fontFamily: "Cormorant Garamond,Georgia,serif", fontSize: 20, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--ink,#1a1714)" }}>SAMS</span>
         <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 8, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-light,#9a9490)", marginTop: 2 }}>Student Portal</span>
       </div>
 
+      {/* ── Nav Links ── */}
       <nav style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
         {NAV_ITEMS.map(item => (
           <Link key={item.id} href={item.href} style={{ textDecoration: "none" }}>
@@ -50,15 +47,12 @@ export function Navbar({ activeNav, notifications = [], setNotifications, yearOf
         ))}
       </nav>
 
+      {/* ── Right side: Bell + Profile avatar (→ profile page) + Logout ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, background: "var(--cream-dark,#f0ebe1)", border: "1px solid var(--border,rgba(26,23,20,0.10))", padding: "6px 14px", marginRight: 4 }}>
-          <IconSearch size={14} />
-          <input placeholder="Search sessions…" style={{ background: "none", border: "none", outline: "none", fontSize: 12, color: "var(--ink,#1a1714)", width: 140, fontFamily: "Inter,sans-serif" }} />
-        </div>
 
-        {/* ── Notifications dropdown ── */}
+        {/* Notifications dropdown */}
         <div ref={notifRef} style={{ position: "relative" }}>
-          <button onClick={() => { setNotifOpen(o => !o); setProfileOpen(false); }} style={{ position: "relative", background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "7px 9px", color: "var(--ink-muted,#5a5650)", display: "flex", alignItems: "center" }}>
+          <button onClick={() => setNotifOpen(o => !o)} style={{ position: "relative", background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "7px 9px", color: "var(--ink-muted,#5a5650)", display: "flex", alignItems: "center" }}>
             <IconBell size={17} />
             {notifications.length > 0 && <span style={{ position: "absolute", top: 4, right: 4, width: 7, height: 7, borderRadius: "50%", background: "var(--gold,#b8965a)", border: "1.5px solid #faf7f2" }} />}
           </button>
@@ -83,39 +77,27 @@ export function Navbar({ activeNav, notifications = [], setNotifications, yearOf
           )}
         </div>
 
-        <button style={{ background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "7px 9px", color: "var(--ink-muted,#5a5650)", display: "flex", alignItems: "center" }}><IconSettings size={17} /></button>
-
-        {/* ── Profile dropdown (Medical Portal link removed) ── */}
-        <div ref={profileRef} style={{ position: "relative" }}>
-          <button onClick={() => { setProfileOpen(o => !o); setNotifOpen(false); }} style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "5px 12px 5px 6px" }}>
+        {/* Profile avatar → links directly to profile page */}
+        <Link href="/student/profile" style={{ textDecoration: "none" }}>
+          <button style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "5px 12px 5px 6px" }}>
             <div style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--gold,#b8965a)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cormorant Garamond,serif", fontSize: 14, fontWeight: 600, color: "#fff" }}>A</div>
             <div style={{ textAlign: "left" }}>
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: "var(--ink,#1a1714)" }}>Alex Johnson</div>
               <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 8, color: "var(--ink-light,#9a9490)", letterSpacing: "0.1em", textTransform: "uppercase" }}>CS — {yearOfStudy}</div>
             </div>
-            <IconChevronDown size={12} />
           </button>
-          {profileOpen && (
-            <div style={{ position: "absolute", top: "calc(100% + 8px)", right: 0, width: 200, background: "#fff", border: "1px solid var(--border,rgba(26,23,20,0.10))", boxShadow: "0 12px 40px rgba(26,23,20,0.10)", zIndex: 300 }}>
-              {[
-                { icon: <IconUser size={14} />, label: "My Profile", href: "/student/profile" },
-                { icon: <IconSettings size={14} />, label: "Settings", href: "#" },
-              ].map(item => (
-                <Link key={item.label} href={item.href} style={{ textDecoration: "none" }}>
-                  <button style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "11px 16px", background: "none", border: "none", borderBottom: "1px solid var(--border,rgba(26,23,20,0.06))", cursor: "pointer", color: "var(--ink-muted,#5a5650)", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 500, letterSpacing: "0.08em", textAlign: "left" }}
-                    onMouseEnter={e => e.currentTarget.style.background = "var(--cream-dark,#f0ebe1)"}
-                    onMouseLeave={e => e.currentTarget.style.background = "none"}>
-                    {item.icon}{item.label}
-                  </button>
-                </Link>
-              ))}
-              <Link href="/auth/login" style={{ width: "100%", display: "flex", alignItems: "center", gap: 10, padding: "11px 16px", color: "#b91c1c", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", textDecoration: "none" }}>
-                <IconLogOut size={14} />Sign Out
-              </Link>
-            </div>
-          )}
-        </div>
+        </Link>
+
+        {/* Logout button — icon + red text */}
+        <Link href="/auth/login" style={{ textDecoration: "none" }}>
+          <button style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "7px 14px", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#b91c1c", transition: "background 0.2s" }}
+            onMouseEnter={e => e.currentTarget.style.background = "rgba(185,28,28,0.06)"}
+            onMouseLeave={e => e.currentTarget.style.background = "none"}>
+            <IconLogOut size={15} />Logout
+          </button>
+        </Link>
       </div>
     </header>
   );
 }
+
