@@ -3,39 +3,55 @@ import { useState, useRef } from "react";
 import Link from "next/link";
 import { useOutsideClick } from "../../hooks/useOutsideClick";
 import {
-  IconGrid, IconBook, IconCalendar, IconClock,
+  IconGrid,
   IconBell, IconLogOut,
-  IconAlertCircle, IconInfo, IconCheckCircle, IconX,
+  IconAlertCircle, IconInfo, IconCheckCircle, IconX, IconBook,
 } from "../../components/icons/studentIcons";
 
-/* Nav links — Profile removed; clicking the profile avatar goes to /student/profile */
-export const NAV_ITEMS = [
-  { id: "dashboard",  label: "Dashboard",  icon: <IconGrid size={17} />,     href: "/student/dashboard" },
-  { id: "courses",    label: "Courses",    icon: <IconBook size={17} />,     href: "/student/courses" },
-  { id: "attendance", label: "Attendance", icon: <IconCalendar size={17} />, href: "/student/attendance" },
-  { id: "history",    label: "History",    icon: <IconClock size={17} />,    href: "/student/history" },
-];
+/* ─── Custom SVG Icons for Admin Navbar ───────────────────────────── */
+function IconBuilding({ size = 17 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="4" y="2" width="16" height="20" rx="1" /><path d="M9 22V12h6v10" />
+      <path d="M9 7h.01M12 7h.01M15 7h.01M9 11h.01M12 11h.01M15 11h.01" />
+    </svg>
+  );
+}
 
+function IconUsers({ size = 17 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
+      <path d="M23 21v-2a4 4 0 0 0-3-3.87" /><path d="M16 3.13a4 4 0 0 1 0 7.75" />
+    </svg>
+  );
+}
+
+/* Admin nav items */
+export const NAV_ITEMS = [
+  { id: "dashboard",   label: "Dashboard",   icon: <IconGrid size={17} />,     href: "/admin" },
+  { id: "subjects",    label: "Subjects",    icon: <IconBook size={17} />,     href: "/admin/subjects" },
+  { id: "departments", label: "Departments", icon: <IconBuilding size={17} />, href: "/admin/departments" },
+  { id: "users",       label: "Users",       icon: <IconUsers size={17} />,       href: "/admin/users" },
+];
 const NOTIF_STYLES = {
   info:    { bg: "#f0f9ff", border: "#bae6fd", icon: <IconInfo size={15} />, iconColor: "#0369a1" },
   success: { bg: "#f0fdf4", border: "#bbf7d0", icon: <IconCheckCircle size={15} />, iconColor: "#15803d" },
   warning: { bg: "#fffbeb", border: "#fde68a", icon: <IconAlertCircle size={15} />, iconColor: "#b45309" },
 };
-
-export function Navbar({ activeNav, notifications = [], setNotifications, yearOfStudy = "Year 3" }) {
+export function AdminNavbar({ activeNav, notifications = [], setNotifications, adminName = "Admin User" }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
-
   useOutsideClick(notifRef, () => setNotifOpen(false));
-
+  // Initials for avatar
+  const initials = adminName.split(" ").map(w => w[0]).join("").slice(0, 2).toUpperCase();
   return (
     <header style={{ position: "fixed", top: 0, left: 0, right: 0, zIndex: 200, height: 64, background: "rgba(250,247,242,0.96)", backdropFilter: "blur(14px)", borderBottom: "1px solid var(--border,rgba(26,23,20,0.10))", display: "flex", alignItems: "center", padding: "0 32px", gap: 0 }}>
       {/* ── Brand ── */}
       <div style={{ display: "flex", flexDirection: "column", alignItems: "flex-start", marginRight: 40, lineHeight: 1 }}>
         <span style={{ fontFamily: "Cormorant Garamond,Georgia,serif", fontSize: 20, fontWeight: 600, letterSpacing: "0.22em", textTransform: "uppercase", color: "var(--ink,#1a1714)" }}>SAMS</span>
-        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 8, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-light,#9a9490)", marginTop: 2 }}>Student Portal</span>
+        <span style={{ fontFamily: "Montserrat,sans-serif", fontSize: 8, fontWeight: 500, letterSpacing: "0.12em", textTransform: "uppercase", color: "var(--ink-light,#9a9490)", marginTop: 2 }}>Admin Portal</span>
       </div>
-
       {/* ── Nav Links ── */}
       <nav style={{ display: "flex", alignItems: "center", gap: 2, flex: 1 }}>
         {NAV_ITEMS.map(item => (
@@ -46,10 +62,8 @@ export function Navbar({ activeNav, notifications = [], setNotifications, yearOf
           </Link>
         ))}
       </nav>
-
       {/* ── Right side: Bell + Profile avatar (→ profile page) + Logout ── */}
       <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-
         {/* Notifications dropdown */}
         <div ref={notifRef} style={{ position: "relative" }}>
           <button onClick={() => setNotifOpen(o => !o)} style={{ position: "relative", background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "7px 9px", color: "var(--ink-muted,#5a5650)", display: "flex", alignItems: "center" }}>
@@ -76,18 +90,16 @@ export function Navbar({ activeNav, notifications = [], setNotifications, yearOf
             </div>
           )}
         </div>
-
-        {/* Profile avatar → links directly to profile page */}
-        <Link href="/student/profile" style={{ textDecoration: "none" }}>
+        {/* Profile avatar → links directly to admin profile page */}
+        <Link href="/admin/profile" style={{ textDecoration: "none" }}>
           <button style={{ display: "flex", alignItems: "center", gap: 8, background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "5px 12px 5px 6px" }}>
-            <div style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--gold,#b8965a)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cormorant Garamond,serif", fontSize: 14, fontWeight: 600, color: "#fff" }}>A</div>
+            <div style={{ width: 30, height: 30, borderRadius: "50%", background: "var(--gold,#b8965a)", display: "flex", alignItems: "center", justifyContent: "center", fontFamily: "Cormorant Garamond,serif", fontSize: 14, fontWeight: 600, color: "#fff" }}>{initials}</div>
             <div style={{ textAlign: "left" }}>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: "var(--ink,#1a1714)" }}>Alex Johnson</div>
-              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 8, color: "var(--ink-light,#9a9490)", letterSpacing: "0.1em", textTransform: "uppercase" }}>CS — {yearOfStudy}</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.08em", color: "var(--ink,#1a1714)" }}>{adminName}</div>
+              <div style={{ fontFamily: "Montserrat,sans-serif", fontSize: 8, color: "var(--ink-light,#9a9490)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Administrator</div>
             </div>
           </button>
         </Link>
-
         {/* Logout button — icon + red text */}
         <Link href="/auth/login" style={{ textDecoration: "none" }}>
           <button style={{ display: "flex", alignItems: "center", gap: 6, background: "none", border: "1px solid var(--border,rgba(26,23,20,0.10))", cursor: "pointer", padding: "7px 14px", fontFamily: "Montserrat,sans-serif", fontSize: 10, fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase", color: "#b91c1c", transition: "background 0.2s" }}
@@ -100,4 +112,3 @@ export function Navbar({ activeNav, notifications = [], setNotifications, yearOf
     </header>
   );
 }
-
