@@ -3,7 +3,6 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import AuthShell from "../../../components/layout/AuthShell";
-import RoleToggle from "../../../components/ui/RoleToggle";
 
 function IconEye({ open }) {
     return open ? (
@@ -22,7 +21,6 @@ function IconEye({ open }) {
 
 export default function LoginPage() {
     const router = useRouter();
-    const [role, setRole] = useState("student"); // UI intent only — the backend is the source of truth
     const [showPassword, setShowPassword] = useState(false);
     const [form, setForm] = useState({ identifier: "", password: "" });
     const [error, setError] = useState("");
@@ -40,7 +38,7 @@ export default function LoginPage() {
             const res = await fetch("/api/auth/login", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ ...form, roleHint: role }),
+                body: JSON.stringify(form),
             });
             const data = await res.json();
 
@@ -49,9 +47,13 @@ export default function LoginPage() {
                 return;
             }
 
-            // The backend returns the verified role — always trust this over roleHint.
-            const destination =
-                data.role === "lecturer" ? "/lecturer" : "/student";
+            // The backend returns the verified role.
+            let destination = "/student";
+            if (data.role === "lecturer") {
+                destination = "/lecturer";
+            } else if (data.role === "admin") {
+                destination = "/admin";
+            }
             router.push(destination);
         } catch (error) {
             console.error(error);
@@ -74,25 +76,20 @@ export default function LoginPage() {
             <div className="section-label">Account Access</div>
             <h2 className="auth-heading">Sign in to SAMS</h2>
             <p className="auth-subtext">
-                Choose your account type, then enter your university credentials.
+                Enter your university credentials to access your account.
             </p>
-
-            <div className="form-group">
-                <span className="form-label">I am signing in as</span>
-                <RoleToggle value={role} onChange={setRole} />
-            </div>
 
             <form onSubmit={handleSubmit} noValidate>
                 <div className="form-group">
                     <label className="form-label" htmlFor="identifier">
-                        {role === "lecturer" ? "Staff Email" : "University Email"}
+                        Email Address
                     </label>
                     <input
                         id="identifier"
                         name="identifier"
                         type="text"
                         autoComplete="username"
-                        placeholder={role === "lecturer" ? "e.g. j.perera@sjp.ac.lk" : "e.g. fc111234@sjp.ac.lk"}
+                        placeholder="e.g. fc111234@sjp.ac.lk or admin@sjp.ac.lk"
                         className="form-input"
                         value={form.identifier}
                         onChange={handleChange}
