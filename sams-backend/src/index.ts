@@ -25,6 +25,8 @@ import moduleRoutes from './routes/module.routes';
 import sessionRoutes from './routes/session.routes';
 app.use('/api', moduleRoutes);
 app.use('/api/sessions', sessionRoutes);
+import studentRoutes from './routes/student.routes';
+app.use('/api/student', studentRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
