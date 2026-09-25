@@ -19,6 +19,8 @@ app.get('/health', (req, res) => {
 
 import authRoutes from './routes/auth.routes';
 app.use('/api/auth', authRoutes);
+import adminRoutes from './routes/admin.routes';
+app.use('/api/admin', adminRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
