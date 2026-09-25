@@ -18,5 +18,8 @@ jobs:
       run: npm ci
       working-directory: ./sams-backend
     - name: Run Tests
+      env:
+        SUPABASE_URL: "https://dummy-test-url.supabase.co"
+        SUPABASE_SERVICE_ROLE_KEY: "dummy-test-key"
       run: npm test
       working-directory: ./sams-backend
