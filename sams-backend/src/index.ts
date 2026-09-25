@@ -21,6 +21,10 @@ import authRoutes from './routes/auth.routes';
 app.use('/api/auth', authRoutes);
 import adminRoutes from './routes/admin.routes';
 app.use('/api/admin', adminRoutes);
+import moduleRoutes from './routes/module.routes';
+import sessionRoutes from './routes/session.routes';
+app.use('/api', moduleRoutes);
+app.use('/api/sessions', sessionRoutes);
 
 if (process.env.NODE_ENV !== 'test') {
   app.listen(PORT, () => {
