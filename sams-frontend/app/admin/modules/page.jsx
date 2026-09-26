@@ -1,11 +1,16 @@
 "use client";
 import { useState, useEffect } from "react";
 
-export default function AdminDepartmentsPage() {
+export default function AdminmodulesPage() {
+  const [modules, setmodules] = useState([]);
+  const [lecturers, setLecturers] = useState([]);
   const [departments, setDepartments] = useState([]);
   const [loading, setLoading] = useState(true);
+
+  // Search/Filter
   const [searchTerm, setSearchTerm] = useState("");
 
+  // Modal State
   const [showModal, setShowModal] = useState(false);
   const [editingId, setEditingId] = useState(null);
   const [submitting, setSubmitting] = useState(false);
@@ -16,18 +21,41 @@ export default function AdminDepartmentsPage() {
   const [formData, setFormData] = useState({
     name: "",
     code: "",
-    status: "active"
+    department: "",
+    batch: "",
+    lecturer_id: ""
   });
 
-  const fetchDepartments = async () => {
+  const fetchData = async () => {
     try {
       const token = localStorage.getItem("sams_token");
-      const res = await fetch("http://localhost:5000/api/admin/departments", {
+      
+      // Fetch modules
+      const subRes = await fetch("http://localhost:5000/api/admin/modules", {
         headers: { "Authorization": `Bearer ${token}` }
       });
-      if (res.ok) {
-        const data = await res.json();
-        setDepartments(data.data.departments || []);
+      if (subRes.ok) {
+        const subData = await subRes.json();
+        setmodules(subData.data.modules || []);
+      }
+
+      // Fetch users to filter lecturers
+      const userRes = await fetch("http://localhost:5000/api/admin/users", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (userRes.ok) {
+        const userData = await userRes.json();
+        const lecs = userData.data.users.filter(u => u.role === "lecturer");
+        setLecturers(lecs);
+      }
+
+      // Fetch departments
+      const deptRes = await fetch("http://localhost:5000/api/admin/departments", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (deptRes.ok) {
+        const deptData = await deptRes.json();
+        setDepartments(deptData.data.departments || []);
       }
     } catch (err) {
       console.error(err);
@@ -37,28 +65,31 @@ export default function AdminDepartmentsPage() {
   };
 
   useEffect(() => {
-    fetchDepartments();
+    fetchData();
   }, []);
 
-  const filteredDepartments = departments.filter(d => 
-    d.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-    d.code?.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredmodules = modules.filter(s => {
+    return s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
+           s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+           (s.department && s.department.toLowerCase().includes(searchTerm.toLowerCase()));
+  });
 
   const handleOpenCreate = () => {
     setEditingId(null);
-    setFormData({ name: "", code: "", status: "active" });
+    setFormData({ name: "", code: "", department: "", batch: "", lecturer_id: "" });
     setErrorMsg("");
     setSuccessMsg("");
     setShowModal(true);
   };
 
-  const handleOpenEdit = (dept) => {
-    setEditingId(dept.id);
+  const handleOpenEdit = (module) => {
+    setEditingId(module.id);
     setFormData({
-      name: dept.name || "",
-      code: dept.code || "",
-      status: dept.status || "active"
+      name: module.name || "",
+      code: module.code || "",
+      department: module.department || "",
+      batch: module.batch || "",
+      lecturer_id: module.lecturer_id || ""
     });
     setErrorMsg("");
     setSuccessMsg("");
@@ -74,8 +105,8 @@ export default function AdminDepartmentsPage() {
     try {
       const token = localStorage.getItem("sams_token");
       const url = editingId 
-        ? `http://localhost:5000/api/admin/departments/${editingId}`
-        : `http://localhost:5000/api/admin/departments`;
+        ? `http://localhost:5000/api/admin/modules/${editingId}`
+        : `http://localhost:5000/api/admin/modules`;
       
       const method = editingId ? "PUT" : "POST";
 
@@ -90,14 +121,14 @@ export default function AdminDepartmentsPage() {
 
       const data = await res.json();
       if (res.ok) {
-        setSuccessMsg(`Department ${editingId ? 'updated' : 'created'} successfully!`);
-        fetchDepartments();
+        setSuccessMsg(`module ${editingId ? 'updated' : 'created'} successfully!`);
+        fetchData();
         setTimeout(() => {
           setShowModal(false);
           setSuccessMsg("");
         }, 1500);
       } else {
-        setErrorMsg(data.message || "Failed to save department");
+        setErrorMsg(data.message || "Failed to save module");
       }
     } catch (err) {
       setErrorMsg("Network error");
@@ -106,12 +137,12 @@ export default function AdminDepartmentsPage() {
     }
   };
 
-  const handleDeleteDepartment = async (id) => {
+  const handleDeleteModule = async (id) => {
     if (deleteConfirm !== id) { setDeleteConfirm(id); return; }
     try {
       const token = localStorage.getItem("sams_token");
-      const res = await fetch(`http://localhost:5000/api/admin/departments/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
-      if (res.ok) { fetchDepartments(); }
+      const res = await fetch(`http://localhost:5000/api/admin/modules/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+      if (res.ok) { fetchData(); }
     } catch (err) { console.error(err); }
     finally { setDeleteConfirm(null); }
   };
@@ -123,15 +154,15 @@ export default function AdminDepartmentsPage() {
         <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
           <div>
             <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3rem", fontWeight: 300, color: "var(--ink)", margin: 0 }}>
-              Department Registry
+              module Registry
             </h1>
             <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--ink-muted)", marginTop: "16px", margin: "16px 0 0 0" }}>
-              Manage faculty departments and status
+              Manage academic modules and lecturer assignments
             </p>
           </div>
           <div>
             <button className="btn-gold" onClick={handleOpenCreate}>
-              + Add New Department
+              + Add New module
             </button>
           </div>
         </div>
@@ -145,7 +176,7 @@ export default function AdminDepartmentsPage() {
             <input 
               type="text" 
               className="auth-input" 
-              placeholder="Search by department name or code..." 
+              placeholder="Search by module name or code..." 
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ backgroundColor: "var(--white)" }}
@@ -153,47 +184,41 @@ export default function AdminDepartmentsPage() {
           </div>
         </div>
 
-        {/* Departments Table */}
+        {/* modules Table */}
         {loading ? (
-          <div style={{ textAlign: "center", padding: "48px", color: "var(--ink-muted)" }}>Loading departments...</div>
+          <div style={{ textAlign: "center", padding: "48px", color: "var(--ink-muted)" }}>Loading modules...</div>
         ) : (
           <div style={{ backgroundColor: "var(--white)", border: "1px solid var(--border)", borderRadius: "var(--radius)", overflowX: "auto" }}>
             <table style={{ width: "100%", borderCollapse: "collapse" }}>
               <thead>
                 <tr style={{ backgroundColor: "var(--cream)", borderBottom: "1px solid var(--border)" }}>
-                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Department Info</th>
-                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Status</th>
-                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Created Date</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>module Info</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Department</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Assigned Lecturer</th>
                   <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {filteredDepartments.length === 0 ? (
+                {filteredmodules.length === 0 ? (
                   <tr>
-                    <td colSpan="4" style={{ padding: "48px", textAlign: "center", color: "var(--ink-muted)" }}>No departments found.</td>
+                    <td colSpan="4" style={{ padding: "48px", textAlign: "center", color: "var(--ink-muted)" }}>No modules found.</td>
                   </tr>
                 ) : (
-                  filteredDepartments.map((d) => (
-                    <tr key={d.id} style={{ borderBottom: "1px solid var(--border)", transition: "background-color 0.2s" }} onMouseOver={e => e.currentTarget.style.backgroundColor = "var(--cream)"} onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}>
+                  filteredmodules.map((s) => (
+                    <tr key={s.id} style={{ borderBottom: "1px solid var(--border)", transition: "background-color 0.2s" }} onMouseOver={e => e.currentTarget.style.backgroundColor = "var(--cream)"} onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}>
                       <td style={{ padding: "20px 24px" }}>
-                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 500, color: "var(--ink)" }}>{d.name}</div>
-                        <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: "var(--ink-muted)", marginTop: "4px" }}>CODE: {d.code}</div>
-                      </td>
-                      <td style={{ padding: "20px 24px" }}>
-                        <span style={{ 
-                          backgroundColor: d.status === 'active' ? "rgba(46, 204, 113, 0.1)" : "rgba(231, 76, 60, 0.1)", 
-                          color: d.status === 'active' ? "#27ae60" : "#e74c3c", 
-                          padding: "4px 8px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase"
-                        }}>
-                          {d.status}
-                        </span>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 500, color: "var(--ink)" }}>{s.name}</div>
+                        <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: "var(--ink-muted)", marginTop: "4px" }}>{s.code} • Batch: {s.batch || 'N/A'}</div>
                       </td>
                       <td style={{ padding: "20px 24px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--ink-light)" }}>
-                        {new Date(d.created_at).toLocaleDateString()}
+                        {s.department || '—'}
+                      </td>
+                      <td style={{ padding: "20px 24px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--ink-light)" }}>
+                        {s.profiles?.full_name || s.lecturer?.full_name || 'Unassigned'}
                       </td>
                       <td style={{ padding: "20px 24px" }}>
                         <button 
-                          onClick={() => handleOpenEdit(d)}
+                          onClick={() => handleOpenEdit(s)}
                           style={{ background: "none", border: "1px solid var(--border)", padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}
                           onMouseOver={e => { e.currentTarget.style.backgroundColor = "var(--ink)"; e.currentTarget.style.color = "var(--white)"; e.currentTarget.style.borderColor = "var(--ink)"; }}
                           onMouseOut={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--ink-muted)"; e.currentTarget.style.borderColor = "var(--border)"; }}
@@ -201,11 +226,11 @@ export default function AdminDepartmentsPage() {
                           Edit
                         </button>
                         <button
-                          onClick={() => handleDeleteDepartment(d.id)}
-                          style={{ background: "none", border: `1px solid ${deleteConfirm === d.id ? "#e74c3c" : "var(--border)"}`, padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: deleteConfirm === d.id ? "#e74c3c" : "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "8px" }}
+                          onClick={() => handleDeleteModule(s.id)}
+                          style={{ background: "none", border: `1px solid ${deleteConfirm === s.id ? "#e74c3c" : "var(--border)"}`, padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: deleteConfirm === s.id ? "#e74c3c" : "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em", marginLeft: "8px" }}
                           onMouseOver={e => { e.currentTarget.style.backgroundColor = "rgba(231,76,60,0.1)"; e.currentTarget.style.color = "#e74c3c"; e.currentTarget.style.borderColor = "#e74c3c"; }}
-                          onMouseOut={e => { if (deleteConfirm !== d.id) { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--ink-muted)"; e.currentTarget.style.borderColor = "var(--border)"; } }}
-                        >{deleteConfirm === d.id ? "Confirm?" : "Delete"}</button>
+                          onMouseOut={e => { if (deleteConfirm !== s.id) { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--ink-muted)"; e.currentTarget.style.borderColor = "var(--border)"; } }}
+                        >{deleteConfirm === s.id ? "Confirm?" : "Delete"}</button>
                       </td>
                     </tr>
                   ))
@@ -217,13 +242,13 @@ export default function AdminDepartmentsPage() {
 
       </div>
 
-      {/* Department Modal */}
+      {/* module Modal */}
       {showModal && (
         <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "24px" }}>
           <div style={{ backgroundColor: "var(--cream)", padding: "40px", borderRadius: "var(--radius)", width: "100%", maxWidth: "500px", maxHeight: "90vh", overflowY: "auto", border: "1px solid var(--border)", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
             <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
               <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "2rem", color: "var(--ink)", margin: 0 }}>
-                {editingId ? "Edit Department" : "Add New Department"}
+                {editingId ? "Edit module" : "Add New module"}
               </h2>
               <button onClick={() => setShowModal(false)} style={{ background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "var(--ink-muted)" }}>×</button>
             </div>
@@ -234,27 +259,42 @@ export default function AdminDepartmentsPage() {
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
               
               <div className="input-group" style={{ margin: 0 }}>
-                <label className="input-label">DEPARTMENT NAME</label>
-                <input type="text" className="auth-input" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Faculty of Computing" />
+                <label className="input-label">module NAME</label>
+                <input type="text" className="auth-input" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Data Structures" />
               </div>
               
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div className="input-group" style={{ margin: 0 }}>
-                  <label className="input-label">DEPARTMENT CODE</label>
-                  <input type="text" className="auth-input" required value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} placeholder="e.g. FOC" />
+                  <label className="input-label">module CODE</label>
+                  <input type="text" className="auth-input" required value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} placeholder="e.g. CS101" />
                 </div>
                 <div className="input-group" style={{ margin: 0 }}>
-                  <label className="input-label">STATUS</label>
-                  <select className="auth-input" required value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
-                  </select>
+                  <label className="input-label">BATCH</label>
+                  <input type="text" className="auth-input" value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})} placeholder="e.g. 2021" />
                 </div>
+              </div>
+
+              <div className="input-group" style={{ margin: 0 }}>
+                <label className="input-label">DEPARTMENT</label>
+                <select className="auth-input" required value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} style={{ appearance: "none" }}>
+                  <option value="" disabled>Select Department</option>
+                  {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                </select>
+              </div>
+
+              <div className="input-group" style={{ margin: 0 }}>
+                <label className="input-label">ASSIGNED LECTURER</label>
+                <select className="auth-input" required value={formData.lecturer_id} onChange={e => setFormData({...formData, lecturer_id: e.target.value})}>
+                  <option value="" disabled>Select a Lecturer</option>
+                  {lecturers.map(l => (
+                    <option key={l.id} value={l.id}>{l.full_name} ({l.employee_id || 'No ID'})</option>
+                  ))}
+                </select>
               </div>
 
               <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "12px" }}>
                 <button type="button" className="btn-outline-ink" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
-                <button type="submit" className="btn-gold" disabled={submitting}>{submitting ? "Saving..." : (editingId ? "Save Changes" : "Create Department")}</button>
+                <button type="submit" className="btn-gold" disabled={submitting}>{submitting ? "Saving..." : (editingId ? "Save Changes" : "Create module")}</button>
               </div>
             </form>
           </div>

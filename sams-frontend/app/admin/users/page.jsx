@@ -1,369 +1,414 @@
-'use client';
+"use client";
+import { useState, useEffect, useMemo } from "react";
+import { useRouter } from "next/navigation";
 
-import { useState } from 'react';
+export default function AdminUsersPage() {
+  const router = useRouter();
+  const [users, setUsers] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-/* ─── SVG Icons ───────────────────────────────────────────────────── */
-function IconSearch({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8" /><line x1="21" y1="21" x2="16.65" y2="16.65" />
-    </svg>
-  );
-}
-function IconPlus({ size = 15 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <line x1="12" y1="5" x2="12" y2="19" /><line x1="5" y1="12" x2="19" y2="12" />
-    </svg>
-  );
-}
-function IconEdit({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7" />
-      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z" />
-    </svg>
-  );
-}
-function IconDelete({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="3,6 5,6 21,6" /><path d="M19 6l-1 14H6L5 6" />
-      <path d="M10 11v6M14 11v6" /><path d="M9 6V4h6v2" />
-    </svg>
-  );
-}
-function IconBlock({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10" /><line x1="4.93" y1="4.93" x2="19.07" y2="19.07" />
-    </svg>
-  );
-}
-function IconCheckCircle({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22,4 12,14.01 9,11.01" />
-    </svg>
-  );
-}
-function IconRestore({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M3 2v6h6M3 8a9 9 0 1 0 2.83-6.36" />
-    </svg>
-  );
-}
-function IconPersonAdd({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" /><circle cx="9" cy="7" r="4" />
-      <line x1="19" y1="8" x2="19" y2="14" /><line x1="16" y1="11" x2="22" y2="11" />
-    </svg>
-  );
-}
-function IconFilter({ size = 14 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
-      <polygon points="22,3 2,3 10,12.46 10,19 14,21 14,12.46 22,3" />
-    </svg>
-  );
-}
-function IconChevDown({ size = 11 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <polyline points="6,9 12,15 18,9" />
-    </svg>
-  );
-}
-function IconChevLeft({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <polyline points="15,18 9,12 15,6" />
-    </svg>
-  );
-}
-function IconChevRight({ size = 18 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <polyline points="9,18 15,12 9,6" />
-    </svg>
-  );
-}
-function IconClose({ size = 16 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round">
-      <line x1="18" y1="6" x2="6" y2="18" /><line x1="6" y1="6" x2="18" y2="18" />
-    </svg>
-  );
-}
-function IconStar({ size = 9 }) {
-  return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill="currentColor">
-      <polygon points="12,2 15.09,8.26 22,9.27 17,14.14 18.18,21.02 12,17.77 5.82,21.02 7,14.14 2,9.27 8.91,8.26" />
-    </svg>
-  );
-}
+  // Filters and Search
+  const [searchTerm, setSearchTerm] = useState("");
+  const [roleFilter, setRoleFilter] = useState("all");
+  const [deptFilter, setDeptFilter] = useState("all");
+  const [departments, setDepartments] = useState([]);
 
-const USERS = [
-  { initials: 'AB', name: 'Alice Brown', email: 'alice.brown@sams.edu', role: 'Faculty', dept: 'Computer Science', status: 'active', actions: ['edit', 'block', 'delete'] },
-  { initials: 'MC', name: 'Mark Chen', email: 'm.chen@sams.edu', role: 'Staff', dept: 'Administration', status: 'pending', actions: ['edit', 'approve', 'delete'] },
-  { initials: 'SJ', name: 'Sarah Johnson', email: 's.johnson@sams.edu', role: 'IT Support', dept: 'Infrastructure', status: 'deactivated', actions: ['edit', 'restore', 'delete'] },
-  { initials: 'RW', name: 'Robert White', email: 'r.white@sams.edu', role: 'Admin', dept: 'Finance', status: 'active', actions: ['edit', 'block', 'delete'] },
-  { initials: 'DP', name: 'Dinusha Perera', email: 'd.perera@sams.edu', role: 'Faculty', dept: 'Software Engineering', status: 'active', actions: ['edit', 'block', 'delete'] },
-  { initials: 'KN', name: 'Kavindra Niroshan', email: 'k.niroshan@sams.edu', role: 'Faculty', dept: 'Data Science', status: 'pending', actions: ['edit', 'approve', 'delete'] },
-];
+  // Create User Modal State
+  const [showModal, setShowModal] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [editingUser, setEditingUser] = useState(null);
+  const [submitting, setSubmitting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState("");
+  const [successMsg, setSuccessMsg] = useState("");
+  const [deleteConfirm, setDeleteConfirm] = useState(null);
 
-const STATUS_CONFIG = {
-  active: { label: 'Active', cls: 'admin-badge-green' },
-  pending: { label: 'Pending', cls: 'admin-badge-amber' },
-  deactivated: { label: 'Deactivated', cls: 'admin-badge-red' },
-};
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+    role: "student",
+    fullName: "",
+    department: "",
+    regNumber: "",
+    batch: "",
+    employeeId: ""
+  });
 
-const ROLE_CONFIG = {
-  Faculty: 'admin-badge-gold',
-  Admin: 'admin-badge-ink',
-  Staff: 'admin-badge-ink',
-  'IT Support': 'admin-badge-ink',
-};
+  const fetchUsers = async () => {
+    try {
+      const token = localStorage.getItem("sams_token");
+      const res = await fetch("http://localhost:5000/api/admin/users", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setUsers(data.data.users);
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
 
-export default function UserManagementPage() {
-  const [addModalOpen, setAddModalOpen] = useState(false);
+  const fetchDepartments = async () => {
+    try {
+      const token = localStorage.getItem("sams_token");
+      const res = await fetch("http://localhost:5000/api/admin/departments", {
+        headers: { "Authorization": `Bearer ${token}` }
+      });
+      if (res.ok) {
+        const data = await res.json();
+        setDepartments(data.data.departments || []);
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUsers();
+    fetchDepartments();
+  }, []);
+
+  const filteredUsers = useMemo(() => {
+    return users.filter(u => {
+      const matchesSearch = u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+                            u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            u.reg_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                            u.employee_id?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesRole = roleFilter === "all" || u.role === roleFilter;
+      const matchesDept = deptFilter === "all" || u.department === deptFilter;
+      
+      return matchesSearch && matchesRole && matchesDept;
+    });
+  }, [users, searchTerm, roleFilter, deptFilter]);
+
+  const handleCreateUser = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSuccessMsg("");
+    setSubmitting(true);
+
+    try {
+      const token = localStorage.getItem("sams_token");
+      // Call the existing auth register endpoint
+      const res = await fetch("http://localhost:5000/api/auth/register", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await res.json();
+      if (res.ok) {
+        setSuccessMsg("User created successfully!");
+        setFormData({
+          email: "", password: "", role: "student", fullName: "", department: "", regNumber: "", batch: "", employeeId: ""
+        });
+        fetchUsers(); // Refresh list
+        setTimeout(() => {
+          setShowModal(false);
+          setSuccessMsg("");
+        }, 1500);
+      } else {
+        setErrorMsg(data.message || "Failed to create user");
+      }
+    } catch (err) {
+      setErrorMsg("Network error");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const handleOpenEdit = (u) => {
+    setEditingUser({ ...u, full_name: u.full_name || "", department: u.department || "", reg_number: u.reg_number || "", batch: u.batch || "", employee_id: u.employee_id || "" });
+    setErrorMsg("");
+    setSuccessMsg("");
+    setShowEditModal(true);
+  };
+
+  const handleEditUser = async (e) => {
+    e.preventDefault();
+    setErrorMsg("");
+    setSubmitting(true);
+    try {
+      const token = localStorage.getItem("sams_token");
+      const res = await fetch(`http://localhost:5000/api/admin/users/${editingUser.id}`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", "Authorization": `Bearer ${token}` },
+        body: JSON.stringify({ full_name: editingUser.full_name, department: editingUser.department, reg_number: editingUser.reg_number, batch: editingUser.batch, employee_id: editingUser.employee_id })
+      });
+      const data = await res.json();
+      if (res.ok) { setSuccessMsg("User updated!"); fetchUsers(); setTimeout(() => { setShowEditModal(false); setSuccessMsg(""); }, 1200); }
+      else { setErrorMsg(data.message || "Failed to update user"); }
+    } catch { setErrorMsg("Network error"); }
+    finally { setSubmitting(false); }
+  };
+
+  const handleDeleteUser = async (id) => {
+    if (deleteConfirm !== id) { setDeleteConfirm(id); return; }
+    try {
+      const token = localStorage.getItem("sams_token");
+      const res = await fetch(`http://localhost:5000/api/admin/users/${id}`, { method: "DELETE", headers: { "Authorization": `Bearer ${token}` } });
+      if (res.ok) { fetchUsers(); }
+    } catch (err) { console.error(err); }
+    finally { setDeleteConfirm(null); }
+  };
 
   return (
-    <>
-      {/* ── PAGE HEADER ── */}
-      <div className="admin-page-header">
-        <div>
-          <div className="admin-page-eyebrow">Personnel Registry</div>
-          <h1 className="admin-page-title">User <em>Management</em></h1>
-          <p className="admin-page-subtitle">Manage administrators, faculty, staff, and support personnel.</p>
-        </div>
-        <button className="admin-btn-gold" onClick={() => setAddModalOpen(true)}>
-          <IconPersonAdd size={15} /> Add New User
-        </button>
-      </div>
-
-      {/* ── SEARCH & FILTER BAR ── */}
-      <div style={{
-        background: 'var(--white)', border: '1px solid var(--border)',
-        padding: '20px 24px', marginBottom: 24,
-        display: 'flex', gap: 12, alignItems: 'flex-end', flexWrap: 'wrap',
-      }}>
-        <div style={{ flex: 1, minWidth: 240 }}>
-          <label className="admin-label">Search Users</label>
-          <div className="admin-search-wrap" style={{ width: '100%' }}>
-            <span className="admin-search-icon"><IconSearch /></span>
-            <input className="admin-search" style={{ width: '100%' }} placeholder="Name, email, or employee ID..." type="text" />
+    <div style={{ width: "100%", paddingBottom: "64px", position: "relative" }}>
+      {/* Page Header */}
+      <div style={{ backgroundColor: "var(--cream-dark)", padding: "48px", borderBottom: "1px solid var(--border)" }}>
+        <div style={{ maxWidth: "1200px", margin: "0 auto", display: "flex", justifyContent: "space-between", alignItems: "flex-end" }}>
+          <div>
+            <h1 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "3rem", fontWeight: 300, color: "var(--ink)", margin: 0 }}>
+              User Registry
+            </h1>
+            <p style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "11px", fontWeight: 600, letterSpacing: "0.15em", textTransform: "uppercase", color: "var(--ink-muted)", marginTop: "16px", margin: "16px 0 0 0" }}>
+              Manage students, lecturers, and administrators
+            </p>
+          </div>
+          <div>
+            <button className="btn-gold" onClick={() => setShowModal(true)}>
+              + Add New User
+            </button>
           </div>
         </div>
+      </div>
 
-        <div>
-          <label className="admin-label">Role</label>
-          <div style={{ position: 'relative' }}>
-            <select className="admin-select">
-              <option>All Roles</option>
-              <option>Admin</option>
-              <option>Faculty</option>
-              <option>Staff</option>
-              <option>IT Support</option>
+      <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 24px" }}>
+        
+        {/* Filters & Search */}
+        <div style={{ display: "flex", gap: "16px", marginBottom: "32px", flexWrap: "wrap" }}>
+          <div className="input-group" style={{ flex: "1 1 300px", margin: 0 }}>
+            <input 
+              type="text" 
+              className="auth-input" 
+              placeholder="Search by name, email, or ID..." 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              style={{ backgroundColor: "var(--white)" }}
+            />
+          </div>
+          <div className="input-group" style={{ flex: "0 0 200px", margin: 0 }}>
+            <select 
+              className="auth-input" 
+              value={roleFilter} 
+              onChange={(e) => setRoleFilter(e.target.value)}
+              style={{ backgroundColor: "var(--white)" }}
+            >
+              <option value="all">All Roles</option>
+              <option value="student">Student</option>
+              <option value="lecturer">Lecturer</option>
+              <option value="admin">Admin</option>
+            </select>
+          </div>
+          <div className="input-group" style={{ flex: "0 0 200px", margin: 0 }}>
+            <select 
+              className="auth-input" 
+              value={deptFilter} 
+              onChange={(e) => setDeptFilter(e.target.value)}
+              style={{ backgroundColor: "var(--white)" }}
+            >
+              <option value="all">All Departments</option>
+              {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
             </select>
           </div>
         </div>
 
-        <div>
-          <label className="admin-label">Department</label>
-          <select className="admin-select">
-            <option>All Departments</option>
-            <option>Computer Science</option>
-            <option>Software Engineering</option>
-            <option>Administration</option>
-            <option>Infrastructure</option>
-          </select>
-        </div>
-
-        <div>
-          <label className="admin-label">Status</label>
-          <select className="admin-select">
-            <option>All Statuses</option>
-            <option>Active</option>
-            <option>Pending</option>
-            <option>Deactivated</option>
-          </select>
-        </div>
-
-        <button className="admin-btn-outline" style={{ display: 'flex', alignItems: 'center', gap: 7 }}>
-          <IconFilter /> Apply Filters
-        </button>
-      </div>
-
-      {/* ── ORNAMENT ── */}
-      <div className="admin-ornament"><IconStar /></div>
-
-      {/* ── USER TABLE ── */}
-      <div className="admin-table-wrapper">
-        <div className="admin-table-header">
-          <div>
-            <div className="admin-table-title">System Users</div>
-            <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 8.5, color: 'var(--ink-light)', letterSpacing: '0.12em', textTransform: 'uppercase', marginTop: 4 }}>
-              Showing 1–6 of 24 registered users
-            </div>
-          </div>
-          <div style={{ display: 'flex', gap: 8 }}>
-            <button className="admin-btn-outline" style={{ padding: '8px 16px' }}>
-              <IconFilter size={12} /> Filter
-            </button>
-          </div>
-        </div>
-
-        <div style={{ overflowX: 'auto' }}>
-          <table className="admin-table">
-            <thead>
-              <tr>
-                <th>User</th>
-                <th>Role</th>
-                <th>Department</th>
-                <th>Status</th>
-                <th style={{ textAlign: 'right' }}>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {USERS.map((user) => {
-                const statusConf = STATUS_CONFIG[user.status];
-                const roleCls = ROLE_CONFIG[user.role] || 'admin-badge-ink';
-                return (
-                  <tr key={user.email}>
-                    {/* User cell */}
-                    <td>
-                      <div style={{ display: 'flex', alignItems: 'center', gap: 12 }}>
-                        <div className="admin-user-avatar">{user.initials}</div>
-                        <div>
-                          <div style={{ fontWeight: 500, color: 'var(--ink)', fontSize: 14 }}>{user.name}</div>
-                          <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 9, letterSpacing: '0.08em', color: 'var(--ink-light)', marginTop: 3 }}>{user.email}</div>
-                        </div>
-                      </div>
-                    </td>
-                    {/* Role */}
-                    <td>
-                      <span className={`admin-badge ${roleCls}`}>{user.role}</span>
-                    </td>
-                    {/* Department */}
-                    <td style={{ color: 'var(--ink-muted)', fontSize: 13.5 }}>{user.dept}</td>
-                    {/* Status */}
-                    <td>
-                      <span className={`admin-badge ${statusConf.cls}`}>
-                        <span style={{
-                          width: 5, height: 5, borderRadius: '50%',
-                          background: user.status === 'active' ? '#2d7a45' : user.status === 'pending' ? '#8a6010' : '#c0392b',
-                          display: 'inline-block',
-                        }} />
-                        {statusConf.label}
-                      </span>
-                    </td>
-                    {/* Actions */}
-                    <td style={{ textAlign: 'right' }}>
-                      <div style={{ display: 'flex', gap: 4, justifyContent: 'flex-end' }}>
-                        <button className="admin-btn-ghost" title="Edit"><IconEdit /></button>
-                        {user.status === 'active' && (
-                          <button className="admin-btn-ghost" title="Deactivate"><IconBlock /></button>
-                        )}
-                        {user.status === 'pending' && (
-                          <button className="admin-btn-ghost" title="Approve" style={{ color: '#2d7a45' }}><IconCheckCircle /></button>
-                        )}
-                        {user.status === 'deactivated' && (
-                          <button className="admin-btn-ghost" title="Reactivate" style={{ color: 'var(--gold-dark)' }}><IconRestore /></button>
-                        )}
-                        <button className="admin-btn-ghost danger" title="Delete"><IconDelete /></button>
-                      </div>
-                    </td>
+        {/* Users Table */}
+        {loading ? (
+          <div style={{ textAlign: "center", padding: "48px", color: "var(--ink-muted)" }}>Loading users...</div>
+        ) : (
+          <div style={{ backgroundColor: "var(--white)", border: "1px solid var(--border)", borderRadius: "var(--radius)", overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse" }}>
+              <thead>
+                <tr style={{ backgroundColor: "var(--cream)", borderBottom: "1px solid var(--border)" }}>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>User</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Role</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Department</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>ID Number</th>
+                  <th style={{ padding: "20px 24px", textAlign: "left", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, color: "var(--ink-muted)", letterSpacing: "0.1em", textTransform: "uppercase" }}>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {filteredUsers.length === 0 ? (
+                  <tr>
+                    <td colSpan="4" style={{ padding: "48px", textAlign: "center", color: "var(--ink-muted)" }}>No users found matching the criteria.</td>
                   </tr>
-                );
-              })}
-            </tbody>
-          </table>
-        </div>
-
-        <div className="admin-table-pagination">
-          <span className="admin-pagination-info">Showing 1–6 of 24 users</span>
-          <div className="admin-pagination-btns">
-            <button className="admin-page-btn" disabled><IconChevLeft /></button>
-            <button className="admin-page-btn active">1</button>
-            <button className="admin-page-btn">2</button>
-            <button className="admin-page-btn">3</button>
-            <span style={{ color: 'var(--ink-light)', fontSize: 12, padding: '0 4px' }}>…</span>
-            <button className="admin-page-btn">4</button>
-            <button className="admin-page-btn"><IconChevRight /></button>
+                ) : (
+                  filteredUsers.map((u) => (
+                    <tr key={u.id} style={{ borderBottom: "1px solid var(--border)", transition: "background-color 0.2s" }} onMouseOver={e => e.currentTarget.style.backgroundColor = "var(--cream)"} onMouseOut={e => e.currentTarget.style.backgroundColor = "transparent"}>
+                      <td style={{ padding: "20px 24px" }}>
+                        <div style={{ fontFamily: "'Inter', sans-serif", fontSize: "14px", fontWeight: 500, color: "var(--ink)" }}>{u.full_name}</div>
+                        <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: "var(--ink-muted)", marginTop: "4px" }}>{u.email}</div>
+                      </td>
+                      <td style={{ padding: "20px 24px" }}>
+                        <span style={{ 
+                          backgroundColor: u.role === 'admin' ? "rgba(231, 76, 60, 0.1)" : u.role === 'lecturer' ? "rgba(241, 196, 15, 0.1)" : "rgba(46, 204, 113, 0.1)", 
+                          color: u.role === 'admin' ? "#e74c3c" : u.role === 'lecturer' ? "var(--gold-dark)" : "#27ae60", 
+                          padding: "4px 8px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase"
+                        }}>
+                          {u.role}
+                        </span>
+                      </td>
+                      <td style={{ padding: "20px 24px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--ink-light)" }}>
+                        {u.department || '—'}
+                      </td>
+                      <td style={{ padding: "20px 24px", fontFamily: "'Inter', sans-serif", fontSize: "14px", color: "var(--ink-light)" }}>
+                        {u.role === 'student' ? u.reg_number : u.role === 'lecturer' ? u.employee_id : '—'}
+                      </td>
+                      <td style={{ padding: "16px 24px" }}>
+                        <div style={{ display: "flex", gap: "8px", alignItems: "center" }}>
+                          <button
+                            onClick={() => handleOpenEdit(u)}
+                            title="Edit user"
+                            style={{ background: "none", border: "1px solid var(--border)", padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em", transition: "all 0.2s" }}
+                            onMouseOver={e => { e.currentTarget.style.backgroundColor = "var(--ink)"; e.currentTarget.style.color = "var(--white)"; e.currentTarget.style.borderColor = "var(--ink)"; }}
+                            onMouseOut={e => { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--ink-muted)"; e.currentTarget.style.borderColor = "var(--border)"; }}
+                          >Edit</button>
+                          <button
+                            onClick={() => handleDeleteUser(u.id)}
+                            title={deleteConfirm === u.id ? "Click again to confirm" : "Delete user"}
+                            style={{ background: "none", border: `1px solid ${deleteConfirm === u.id ? "#e74c3c" : "var(--border)"}`, padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: deleteConfirm === u.id ? "#e74c3c" : "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em", transition: "all 0.2s" }}
+                            onMouseOver={e => { e.currentTarget.style.backgroundColor = "rgba(231,76,60,0.1)"; e.currentTarget.style.color = "#e74c3c"; e.currentTarget.style.borderColor = "#e74c3c"; }}
+                            onMouseOut={e => { if (deleteConfirm !== u.id) { e.currentTarget.style.backgroundColor = "transparent"; e.currentTarget.style.color = "var(--ink-muted)"; e.currentTarget.style.borderColor = "var(--border)"; } }}
+                          >{deleteConfirm === u.id ? "Confirm" : "Delete"}</button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                )}
+              </tbody>
+            </table>
           </div>
-        </div>
+        )}
+
       </div>
 
-      {/* ── ADD USER MODAL ── */}
-      {addModalOpen && (
-        <div className="admin-modal-overlay" onClick={(e) => e.target === e.currentTarget && setAddModalOpen(false)}>
-          <div className="admin-modal">
-            <div className="admin-modal-header">
-              <h2 className="admin-modal-title">Add New User</h2>
-              <button className="admin-close-btn" onClick={() => setAddModalOpen(false)}><IconClose /></button>
+      {/* Add User Modal */}
+      {showModal && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "24px" }}>
+          <div style={{ backgroundColor: "var(--cream)", padding: "40px", borderRadius: "var(--radius)", width: "100%", maxWidth: "600px", maxHeight: "90vh", overflowY: "auto", border: "1px solid var(--border)", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "2rem", color: "var(--ink)", margin: 0 }}>Add New User</h2>
+              <button onClick={() => setShowModal(false)} style={{ background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "var(--ink-muted)" }}>×</button>
             </div>
+            
+            {errorMsg && <div style={{ backgroundColor: "rgba(231, 76, 60, 0.1)", color: "#c0392b", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(231, 76, 60, 0.2)" }}>{errorMsg}</div>}
+            {successMsg && <div style={{ backgroundColor: "rgba(46, 204, 113, 0.1)", color: "#27ae60", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(46, 204, 113, 0.2)" }}>{successMsg}</div>}
+            
+            <form onSubmit={handleCreateUser} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              
+              <div className="input-group">
+                <label className="input-label">ROLE</label>
+                <select className="auth-input" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                  <option value="student">Student</option>
+                  <option value="lecturer">Lecturer</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
 
-            <div className="admin-modal-body">
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <div>
-                  <label className="admin-label">First Name</label>
-                  <input className="admin-input" placeholder="e.g. Sarah" type="text" />
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                <div className="input-group" style={{ margin: 0 }}>
+                  <label className="input-label">FULL NAME</label>
+                  <input type="text" className="auth-input" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
                 </div>
-                <div>
-                  <label className="admin-label">Last Name</label>
-                  <input className="admin-input" placeholder="e.g. Fernando" type="text" />
-                </div>
-              </div>
-              <div>
-                <label className="admin-label">Email Address</label>
-                <input className="admin-input" placeholder="name@sams.edu.lk" type="email" />
-              </div>
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 14 }}>
-                <div>
-                  <label className="admin-label">Role</label>
-                  <select className="admin-input" style={{ cursor: 'pointer' }}>
-                    <option>Faculty</option>
-                    <option>Admin</option>
-                    <option>Staff</option>
-                    <option>IT Support</option>
-                  </select>
-                </div>
-                <div>
-                  <label className="admin-label">Department</label>
-                  <select className="admin-input" style={{ cursor: 'pointer' }}>
-                    <option>Computer Science</option>
-                    <option>Software Engineering</option>
-                    <option>Data Science</option>
-                    <option>Administration</option>
-                  </select>
+                <div className="input-group" style={{ margin: 0 }}>
+                  <label className="input-label">EMAIL ADDRESS</label>
+                  <input type="email" className="auth-input" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
                 </div>
               </div>
-              <div>
-                <label className="admin-label">Employee ID</label>
-                <input className="admin-input" placeholder="e.g. EMP-20250001" type="text" />
-              </div>
-              <div style={{ padding: '12px 16px', background: 'rgba(184,150,90,0.06)', border: '1px solid var(--border-gold)' }}>
-                <div style={{ fontFamily: 'Montserrat,sans-serif', fontSize: 8.5, fontWeight: 600, letterSpacing: '0.14em', textTransform: 'uppercase', color: 'var(--gold)', marginBottom: 4 }}>
-                  Note
-                </div>
-                <div style={{ fontSize: 12.5, color: 'var(--ink-muted)', fontWeight: 300 }}>
-                  An invitation email with login credentials will be sent automatically to the registered address.
-                </div>
-              </div>
-            </div>
 
-            <div className="admin-modal-footer">
-              <button className="admin-btn-outline" onClick={() => setAddModalOpen(false)}>Cancel</button>
-              <button className="admin-btn-gold" onClick={() => setAddModalOpen(false)}>
-                <IconPersonAdd size={13} /> Create User
-              </button>
-            </div>
+              <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                <div className="input-group" style={{ margin: 0 }}>
+                  <label className="input-label">PASSWORD</label>
+                  <input type="password" className="auth-input" required minLength={6} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                </div>
+                {formData.role !== 'admin' && (
+                  <div className="input-group" style={{ margin: 0 }}>
+                    <label className="input-label">DEPARTMENT</label>
+                    <select className="auth-input" required value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} style={{ appearance: "none" }}>
+                      <option value="" disabled>Select Department</option>
+                      {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                    </select>
+                  </div>
+                )}
+              </div>
+
+              {formData.role === 'student' && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                  <div className="input-group" style={{ margin: 0 }}>
+                    <label className="input-label">REGISTRATION NUMBER</label>
+                    <input type="text" className="auth-input" required={formData.role === 'student'} value={formData.regNumber} onChange={e => setFormData({...formData, regNumber: e.target.value})} />
+                  </div>
+                  <div className="input-group" style={{ margin: 0 }}>
+                    <label className="input-label">BATCH</label>
+                    <input type="text" className="auth-input" required={formData.role === 'student'} value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})} />
+                  </div>
+                </div>
+              )}
+
+              {formData.role === 'lecturer' && (
+                <div className="input-group">
+                  <label className="input-label">EMPLOYEE ID</label>
+                  <input type="text" className="auth-input" required={formData.role === 'lecturer'} value={formData.employeeId} onChange={e => setFormData({...formData, employeeId: e.target.value})} />
+                </div>
+              )}
+
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "12px" }}>
+                <button type="button" className="btn-outline-ink" onClick={() => setShowModal(false)} disabled={submitting}>Cancel</button>
+                <button type="submit" className="btn-gold" disabled={submitting}>{submitting ? "Creating..." : "Create User"}</button>
+              </div>
+            </form>
           </div>
         </div>
       )}
-    </>
+
+      {/* Edit User Modal */}
+      {showEditModal && editingUser && (
+        <div style={{ position: "fixed", top: 0, left: 0, right: 0, bottom: 0, backgroundColor: "rgba(0,0,0,0.5)", display: "flex", alignItems: "center", justifyContent: "center", zIndex: 100, padding: "24px" }}>
+          <div style={{ backgroundColor: "var(--cream)", padding: "40px", borderRadius: "var(--radius)", width: "100%", maxWidth: "520px", maxHeight: "90vh", overflowY: "auto", border: "1px solid var(--border)", boxShadow: "0 25px 50px -12px rgba(0,0,0,0.25)" }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "32px" }}>
+              <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "2rem", color: "var(--ink)", margin: 0 }}>Edit User</h2>
+              <button onClick={() => setShowEditModal(false)} style={{ background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "var(--ink-muted)" }}>×</button>
+            </div>
+            {errorMsg && <div style={{ backgroundColor: "rgba(231,76,60,0.1)", color: "#c0392b", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(231,76,60,0.2)" }}>{errorMsg}</div>}
+            {successMsg && <div style={{ backgroundColor: "rgba(46,204,113,0.1)", color: "#27ae60", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(46,204,113,0.2)" }}>{successMsg}</div>}
+            <form onSubmit={handleEditUser} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
+              <div className="input-group" style={{ margin: 0 }}>
+                <label className="input-label">FULL NAME</label>
+                <input type="text" className="auth-input" required value={editingUser.full_name} onChange={e => setEditingUser({ ...editingUser, full_name: e.target.value })} />
+              </div>
+              {editingUser.role !== 'admin' && (
+                <div className="input-group" style={{ margin: 0 }}>
+                  <label className="input-label">DEPARTMENT</label>
+                  <select className="auth-input" value={editingUser.department} onChange={e => setEditingUser({ ...editingUser, department: e.target.value })} style={{ appearance: "none" }}>
+                    <option value="">Select Department</option>
+                    {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
+                  </select>
+                </div>
+              )}
+              {editingUser.role === 'student' && (
+                <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
+                  <div className="input-group" style={{ margin: 0 }}><label className="input-label">REG NUMBER</label><input type="text" className="auth-input" value={editingUser.reg_number} onChange={e => setEditingUser({ ...editingUser, reg_number: e.target.value })} /></div>
+                  <div className="input-group" style={{ margin: 0 }}><label className="input-label">BATCH</label><input type="text" className="auth-input" value={editingUser.batch} onChange={e => setEditingUser({ ...editingUser, batch: e.target.value })} /></div>
+                </div>
+              )}
+              {editingUser.role === 'lecturer' && (
+                <div className="input-group" style={{ margin: 0 }}><label className="input-label">EMPLOYEE ID</label><input type="text" className="auth-input" value={editingUser.employee_id} onChange={e => setEditingUser({ ...editingUser, employee_id: e.target.value })} /></div>
+              )}
+              <div style={{ display: "flex", justifyContent: "flex-end", gap: "12px", marginTop: "12px" }}>
+                <button type="button" className="btn-outline-ink" onClick={() => setShowEditModal(false)} disabled={submitting}>Cancel</button>
+                <button type="submit" className="btn-gold" disabled={submitting}>{submitting ? "Saving..." : "Save Changes"}</button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+    </div>
   );
 }
