@@ -133,7 +133,7 @@ export default function Navbar({ portalLabel, navItems, userName, userRole, user
                   <IconBell size={32} />
                 </div>
                 <h4 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.2rem", margin: 0, color: "var(--ink)" }}>No new notifications</h4>
-                <p style={{ fontSize: "12px", color: "var(--ink-muted)", margin: "4px 0 0 0" }}>You're all caught up!</p>
+                <p style={{ fontSize: "12px", color: "var(--ink-muted)", margin: "4px 0 0 0" }}>You&apos;re all caught up!</p>
               </div>
             </div>
           )}

@@ -118,7 +118,7 @@ export default function LoginPage() {
         </form>
 
         <div style={{ marginTop: "40px", textAlign: "center", fontSize: "13px", color: "var(--ink-muted)" }}>
-          Don't have an account? <Link href="/auth/register" className="auth-link">Create one now</Link>
+          Don&apos;t have an account? <Link href="/auth/register" className="auth-link">Create one now</Link>
         </div>
 
         <div style={{ marginTop: "auto", paddingTop: "40px", textAlign: "center" }}>
