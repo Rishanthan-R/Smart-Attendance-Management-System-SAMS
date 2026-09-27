@@ -37,11 +37,28 @@ export default function AdminDepartmentsPage() {
   };
 
   useEffect(() => {
-    fetchDepartments();
+    let ignore = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem("sams_token");
+        const res = await fetch("http://localhost:5000/api/admin/departments", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (!ignore) setDepartments(data.data.departments || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+    return () => { ignore = true; };
   }, []);
 
-  const filteredDepartments = departments.filter(d => 
-    d.name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+  const filteredDepartments = departments.filter(d =>
+    d.name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
     d.code?.toLowerCase().includes(searchTerm.toLowerCase())
   );
 
@@ -73,10 +90,10 @@ export default function AdminDepartmentsPage() {
 
     try {
       const token = localStorage.getItem("sams_token");
-      const url = editingId 
+      const url = editingId
         ? `http://localhost:5000/api/admin/departments/${editingId}`
         : `http://localhost:5000/api/admin/departments`;
-      
+
       const method = editingId ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -100,6 +117,7 @@ export default function AdminDepartmentsPage() {
         setErrorMsg(data.message || "Failed to save department");
       }
     } catch (err) {
+      console.error(err);
       setErrorMsg("Network error");
     } finally {
       setSubmitting(false);
@@ -138,14 +156,14 @@ export default function AdminDepartmentsPage() {
       </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 24px" }}>
-        
+
         {/* Search */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "32px", flexWrap: "wrap" }}>
           <div className="input-group" style={{ flex: "1", margin: 0 }}>
-            <input 
-              type="text" 
-              className="auth-input" 
-              placeholder="Search by department name or code..." 
+            <input
+              type="text"
+              className="auth-input"
+              placeholder="Search by department name or code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ backgroundColor: "var(--white)" }}
@@ -180,9 +198,9 @@ export default function AdminDepartmentsPage() {
                         <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: "var(--ink-muted)", marginTop: "4px" }}>CODE: {d.code}</div>
                       </td>
                       <td style={{ padding: "20px 24px" }}>
-                        <span style={{ 
-                          backgroundColor: d.status === 'active' ? "rgba(46, 204, 113, 0.1)" : "rgba(231, 76, 60, 0.1)", 
-                          color: d.status === 'active' ? "#27ae60" : "#e74c3c", 
+                        <span style={{
+                          backgroundColor: d.status === 'active' ? "rgba(46, 204, 113, 0.1)" : "rgba(231, 76, 60, 0.1)",
+                          color: d.status === 'active' ? "#27ae60" : "#e74c3c",
                           padding: "4px 8px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase"
                         }}>
                           {d.status}
@@ -192,7 +210,7 @@ export default function AdminDepartmentsPage() {
                         {new Date(d.created_at).toLocaleDateString()}
                       </td>
                       <td style={{ padding: "20px 24px" }}>
-                        <button 
+                        <button
                           onClick={() => handleOpenEdit(d)}
                           style={{ background: "none", border: "1px solid var(--border)", padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}
                           onMouseOver={e => { e.currentTarget.style.backgroundColor = "var(--ink)"; e.currentTarget.style.color = "var(--white)"; e.currentTarget.style.borderColor = "var(--ink)"; }}
@@ -227,25 +245,25 @@ export default function AdminDepartmentsPage() {
               </h2>
               <button onClick={() => setShowModal(false)} style={{ background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "var(--ink-muted)" }}>×</button>
             </div>
-            
+
             {errorMsg && <div style={{ backgroundColor: "rgba(231, 76, 60, 0.1)", color: "#c0392b", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(231, 76, 60, 0.2)" }}>{errorMsg}</div>}
             {successMsg && <div style={{ backgroundColor: "rgba(46, 204, 113, 0.1)", color: "#27ae60", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(46, 204, 113, 0.2)" }}>{successMsg}</div>}
-            
+
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              
+
               <div className="input-group" style={{ margin: 0 }}>
                 <label className="input-label">DEPARTMENT NAME</label>
-                <input type="text" className="auth-input" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Faculty of Computing" />
+                <input type="text" className="auth-input" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. Faculty of Computing" />
               </div>
-              
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">DEPARTMENT CODE</label>
-                  <input type="text" className="auth-input" required value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} placeholder="e.g. FOC" />
+                  <input type="text" className="auth-input" required value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })} placeholder="e.g. FOC" />
                 </div>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">STATUS</label>
-                  <select className="auth-input" required value={formData.status} onChange={e => setFormData({...formData, status: e.target.value})}>
+                  <select className="auth-input" required value={formData.status} onChange={e => setFormData({ ...formData, status: e.target.value })}>
                     <option value="active">Active</option>
                     <option value="inactive">Inactive</option>
                   </select>

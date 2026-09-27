@@ -29,7 +29,7 @@ export default function AdminmodulesPage() {
   const fetchData = async () => {
     try {
       const token = localStorage.getItem("sams_token");
-      
+
       // Fetch modules
       const subRes = await fetch("http://localhost:5000/api/admin/modules", {
         headers: { "Authorization": `Bearer ${token}` }
@@ -65,13 +65,48 @@ export default function AdminmodulesPage() {
   };
 
   useEffect(() => {
-    fetchData();
+    let ignore = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem("sams_token");
+
+        const subRes = await fetch("http://localhost:5000/api/admin/modules", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (subRes.ok) {
+          const subData = await subRes.json();
+          if (!ignore) setmodules(subData.data.modules || []);
+        }
+
+        const userRes = await fetch("http://localhost:5000/api/admin/users", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (userRes.ok) {
+          const userData = await userRes.json();
+          const lecs = userData.data.users.filter(u => u.role === "lecturer");
+          if (!ignore) setLecturers(lecs);
+        }
+
+        const deptRes = await fetch("http://localhost:5000/api/admin/departments", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (deptRes.ok) {
+          const deptData = await deptRes.json();
+          if (!ignore) setDepartments(deptData.data.departments || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+    return () => { ignore = true; };
   }, []);
 
   const filteredmodules = modules.filter(s => {
-    return s.name.toLowerCase().includes(searchTerm.toLowerCase()) || 
-           s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
-           (s.department && s.department.toLowerCase().includes(searchTerm.toLowerCase()));
+    return s.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      s.code.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (s.department && s.department.toLowerCase().includes(searchTerm.toLowerCase()));
   });
 
   const handleOpenCreate = () => {
@@ -104,10 +139,10 @@ export default function AdminmodulesPage() {
 
     try {
       const token = localStorage.getItem("sams_token");
-      const url = editingId 
+      const url = editingId
         ? `http://localhost:5000/api/admin/modules/${editingId}`
         : `http://localhost:5000/api/admin/modules`;
-      
+
       const method = editingId ? "PUT" : "POST";
 
       const res = await fetch(url, {
@@ -131,6 +166,7 @@ export default function AdminmodulesPage() {
         setErrorMsg(data.message || "Failed to save module");
       }
     } catch (err) {
+      console.error(err);
       setErrorMsg("Network error");
     } finally {
       setSubmitting(false);
@@ -169,14 +205,14 @@ export default function AdminmodulesPage() {
       </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 24px" }}>
-        
+
         {/* Search */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "32px", flexWrap: "wrap" }}>
           <div className="input-group" style={{ flex: "1", margin: 0 }}>
-            <input 
-              type="text" 
-              className="auth-input" 
-              placeholder="Search by module name or code..." 
+            <input
+              type="text"
+              className="auth-input"
+              placeholder="Search by module name or code..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ backgroundColor: "var(--white)" }}
@@ -217,7 +253,7 @@ export default function AdminmodulesPage() {
                         {s.profiles?.full_name || s.lecturer?.full_name || 'Unassigned'}
                       </td>
                       <td style={{ padding: "20px 24px" }}>
-                        <button 
+                        <button
                           onClick={() => handleOpenEdit(s)}
                           style={{ background: "none", border: "1px solid var(--border)", padding: "6px 12px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "10px", fontWeight: 600, cursor: "pointer", color: "var(--ink-muted)", textTransform: "uppercase", letterSpacing: "0.1em" }}
                           onMouseOver={e => { e.currentTarget.style.backgroundColor = "var(--ink)"; e.currentTarget.style.color = "var(--white)"; e.currentTarget.style.borderColor = "var(--ink)"; }}
@@ -252,31 +288,31 @@ export default function AdminmodulesPage() {
               </h2>
               <button onClick={() => setShowModal(false)} style={{ background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "var(--ink-muted)" }}>×</button>
             </div>
-            
+
             {errorMsg && <div style={{ backgroundColor: "rgba(231, 76, 60, 0.1)", color: "#c0392b", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(231, 76, 60, 0.2)" }}>{errorMsg}</div>}
             {successMsg && <div style={{ backgroundColor: "rgba(46, 204, 113, 0.1)", color: "#27ae60", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(46, 204, 113, 0.2)" }}>{successMsg}</div>}
-            
+
             <form onSubmit={handleSubmit} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              
+
               <div className="input-group" style={{ margin: 0 }}>
                 <label className="input-label">module NAME</label>
-                <input type="text" className="auth-input" required value={formData.name} onChange={e => setFormData({...formData, name: e.target.value})} placeholder="e.g. Data Structures" />
+                <input type="text" className="auth-input" required value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} placeholder="e.g. Data Structures" />
               </div>
-              
+
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">module CODE</label>
-                  <input type="text" className="auth-input" required value={formData.code} onChange={e => setFormData({...formData, code: e.target.value})} placeholder="e.g. CS101" />
+                  <input type="text" className="auth-input" required value={formData.code} onChange={e => setFormData({ ...formData, code: e.target.value })} placeholder="e.g. CS101" />
                 </div>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">BATCH</label>
-                  <input type="text" className="auth-input" value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})} placeholder="e.g. 2021" />
+                  <input type="text" className="auth-input" value={formData.batch} onChange={e => setFormData({ ...formData, batch: e.target.value })} placeholder="e.g. 2021" />
                 </div>
               </div>
 
               <div className="input-group" style={{ margin: 0 }}>
                 <label className="input-label">DEPARTMENT</label>
-                <select className="auth-input" required value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} style={{ appearance: "none" }}>
+                <select className="auth-input" required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })} style={{ appearance: "none" }}>
                   <option value="" disabled>Select Department</option>
                   {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                 </select>
@@ -284,7 +320,7 @@ export default function AdminmodulesPage() {
 
               <div className="input-group" style={{ margin: 0 }}>
                 <label className="input-label">ASSIGNED LECTURER</label>
-                <select className="auth-input" required value={formData.lecturer_id} onChange={e => setFormData({...formData, lecturer_id: e.target.value})}>
+                <select className="auth-input" required value={formData.lecturer_id} onChange={e => setFormData({ ...formData, lecturer_id: e.target.value })}>
                   <option value="" disabled>Select a Lecturer</option>
                   {lecturers.map(l => (
                     <option key={l.id} value={l.id}>{l.full_name} ({l.employee_id || 'No ID'})</option>

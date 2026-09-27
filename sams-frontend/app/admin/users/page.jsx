@@ -1,9 +1,7 @@
 "use client";
 import { useState, useEffect, useMemo } from "react";
-import { useRouter } from "next/navigation";
 
 export default function AdminUsersPage() {
-  const router = useRouter();
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
 
@@ -50,35 +48,45 @@ export default function AdminUsersPage() {
     }
   };
 
-  const fetchDepartments = async () => {
-    try {
-      const token = localStorage.getItem("sams_token");
-      const res = await fetch("http://localhost:5000/api/admin/departments", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      if (res.ok) {
-        const data = await res.json();
-        setDepartments(data.data.departments || []);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
   useEffect(() => {
-    fetchUsers();
-    fetchDepartments();
+    let ignore = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem("sams_token");
+
+        const res = await fetch("http://localhost:5000/api/admin/users", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (res.ok) {
+          const data = await res.json();
+          if (!ignore) setUsers(data.data.users);
+        }
+
+        const deptRes = await fetch("http://localhost:5000/api/admin/departments", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        if (deptRes.ok) {
+          const deptData = await deptRes.json();
+          if (!ignore) setDepartments(deptData.data.departments || []);
+        }
+      } catch (err) {
+        console.error(err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+    return () => { ignore = true; };
   }, []);
 
   const filteredUsers = useMemo(() => {
     return users.filter(u => {
-      const matchesSearch = u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
-                            u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            u.reg_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                            u.employee_id?.toLowerCase().includes(searchTerm.toLowerCase());
+      const matchesSearch = u.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.email?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.reg_number?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+        u.employee_id?.toLowerCase().includes(searchTerm.toLowerCase());
       const matchesRole = roleFilter === "all" || u.role === roleFilter;
       const matchesDept = deptFilter === "all" || u.department === deptFilter;
-      
+
       return matchesSearch && matchesRole && matchesDept;
     });
   }, [users, searchTerm, roleFilter, deptFilter]);
@@ -116,6 +124,7 @@ export default function AdminUsersPage() {
         setErrorMsg(data.message || "Failed to create user");
       }
     } catch (err) {
+      console.error(err);
       setErrorMsg("Network error");
     } finally {
       setSubmitting(false);
@@ -179,23 +188,23 @@ export default function AdminUsersPage() {
       </div>
 
       <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 24px" }}>
-        
+
         {/* Filters & Search */}
         <div style={{ display: "flex", gap: "16px", marginBottom: "32px", flexWrap: "wrap" }}>
           <div className="input-group" style={{ flex: "1 1 300px", margin: 0 }}>
-            <input 
-              type="text" 
-              className="auth-input" 
-              placeholder="Search by name, email, or ID..." 
+            <input
+              type="text"
+              className="auth-input"
+              placeholder="Search by name, email, or ID..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
               style={{ backgroundColor: "var(--white)" }}
             />
           </div>
           <div className="input-group" style={{ flex: "0 0 200px", margin: 0 }}>
-            <select 
-              className="auth-input" 
-              value={roleFilter} 
+            <select
+              className="auth-input"
+              value={roleFilter}
               onChange={(e) => setRoleFilter(e.target.value)}
               style={{ backgroundColor: "var(--white)" }}
             >
@@ -206,9 +215,9 @@ export default function AdminUsersPage() {
             </select>
           </div>
           <div className="input-group" style={{ flex: "0 0 200px", margin: 0 }}>
-            <select 
-              className="auth-input" 
-              value={deptFilter} 
+            <select
+              className="auth-input"
+              value={deptFilter}
               onChange={(e) => setDeptFilter(e.target.value)}
               style={{ backgroundColor: "var(--white)" }}
             >
@@ -246,9 +255,9 @@ export default function AdminUsersPage() {
                         <div style={{ fontFamily: "'Montserrat', sans-serif", fontSize: "10px", color: "var(--ink-muted)", marginTop: "4px" }}>{u.email}</div>
                       </td>
                       <td style={{ padding: "20px 24px" }}>
-                        <span style={{ 
-                          backgroundColor: u.role === 'admin' ? "rgba(231, 76, 60, 0.1)" : u.role === 'lecturer' ? "rgba(241, 196, 15, 0.1)" : "rgba(46, 204, 113, 0.1)", 
-                          color: u.role === 'admin' ? "#e74c3c" : u.role === 'lecturer' ? "var(--gold-dark)" : "#27ae60", 
+                        <span style={{
+                          backgroundColor: u.role === 'admin' ? "rgba(231, 76, 60, 0.1)" : u.role === 'lecturer' ? "rgba(241, 196, 15, 0.1)" : "rgba(46, 204, 113, 0.1)",
+                          color: u.role === 'admin' ? "#e74c3c" : u.role === 'lecturer' ? "var(--gold-dark)" : "#27ae60",
                           padding: "4px 8px", borderRadius: "4px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.1em", textTransform: "uppercase"
                         }}>
                           {u.role}
@@ -296,15 +305,15 @@ export default function AdminUsersPage() {
               <h2 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "2rem", color: "var(--ink)", margin: 0 }}>Add New User</h2>
               <button onClick={() => setShowModal(false)} style={{ background: "none", border: "none", fontSize: "24px", cursor: "pointer", color: "var(--ink-muted)" }}>×</button>
             </div>
-            
+
             {errorMsg && <div style={{ backgroundColor: "rgba(231, 76, 60, 0.1)", color: "#c0392b", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(231, 76, 60, 0.2)" }}>{errorMsg}</div>}
             {successMsg && <div style={{ backgroundColor: "rgba(46, 204, 113, 0.1)", color: "#27ae60", padding: "16px", borderRadius: "var(--radius)", marginBottom: "24px", fontSize: "14px", border: "1px solid rgba(46, 204, 113, 0.2)" }}>{successMsg}</div>}
-            
+
             <form onSubmit={handleCreateUser} style={{ display: "flex", flexDirection: "column", gap: "20px" }}>
-              
+
               <div className="input-group">
                 <label className="input-label">ROLE</label>
-                <select className="auth-input" value={formData.role} onChange={e => setFormData({...formData, role: e.target.value})}>
+                <select className="auth-input" value={formData.role} onChange={e => setFormData({ ...formData, role: e.target.value })}>
                   <option value="student">Student</option>
                   <option value="lecturer">Lecturer</option>
                   <option value="admin">Admin</option>
@@ -314,23 +323,23 @@ export default function AdminUsersPage() {
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">FULL NAME</label>
-                  <input type="text" className="auth-input" required value={formData.fullName} onChange={e => setFormData({...formData, fullName: e.target.value})} />
+                  <input type="text" className="auth-input" required value={formData.fullName} onChange={e => setFormData({ ...formData, fullName: e.target.value })} />
                 </div>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">EMAIL ADDRESS</label>
-                  <input type="email" className="auth-input" required value={formData.email} onChange={e => setFormData({...formData, email: e.target.value})} />
+                  <input type="email" className="auth-input" required value={formData.email} onChange={e => setFormData({ ...formData, email: e.target.value })} />
                 </div>
               </div>
 
               <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                 <div className="input-group" style={{ margin: 0 }}>
                   <label className="input-label">PASSWORD</label>
-                  <input type="password" className="auth-input" required minLength={6} value={formData.password} onChange={e => setFormData({...formData, password: e.target.value})} />
+                  <input type="password" className="auth-input" required minLength={6} value={formData.password} onChange={e => setFormData({ ...formData, password: e.target.value })} />
                 </div>
                 {formData.role !== 'admin' && (
                   <div className="input-group" style={{ margin: 0 }}>
                     <label className="input-label">DEPARTMENT</label>
-                    <select className="auth-input" required value={formData.department} onChange={e => setFormData({...formData, department: e.target.value})} style={{ appearance: "none" }}>
+                    <select className="auth-input" required value={formData.department} onChange={e => setFormData({ ...formData, department: e.target.value })} style={{ appearance: "none" }}>
                       <option value="" disabled>Select Department</option>
                       {departments.map(d => <option key={d.id} value={d.name}>{d.name}</option>)}
                     </select>
@@ -342,11 +351,11 @@ export default function AdminUsersPage() {
                 <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "20px" }}>
                   <div className="input-group" style={{ margin: 0 }}>
                     <label className="input-label">REGISTRATION NUMBER</label>
-                    <input type="text" className="auth-input" required={formData.role === 'student'} value={formData.regNumber} onChange={e => setFormData({...formData, regNumber: e.target.value})} />
+                    <input type="text" className="auth-input" required={formData.role === 'student'} value={formData.regNumber} onChange={e => setFormData({ ...formData, regNumber: e.target.value })} />
                   </div>
                   <div className="input-group" style={{ margin: 0 }}>
                     <label className="input-label">BATCH</label>
-                    <input type="text" className="auth-input" required={formData.role === 'student'} value={formData.batch} onChange={e => setFormData({...formData, batch: e.target.value})} />
+                    <input type="text" className="auth-input" required={formData.role === 'student'} value={formData.batch} onChange={e => setFormData({ ...formData, batch: e.target.value })} />
                   </div>
                 </div>
               )}
@@ -354,7 +363,7 @@ export default function AdminUsersPage() {
               {formData.role === 'lecturer' && (
                 <div className="input-group">
                   <label className="input-label">EMPLOYEE ID</label>
-                  <input type="text" className="auth-input" required={formData.role === 'lecturer'} value={formData.employeeId} onChange={e => setFormData({...formData, employeeId: e.target.value})} />
+                  <input type="text" className="auth-input" required={formData.role === 'lecturer'} value={formData.employeeId} onChange={e => setFormData({ ...formData, employeeId: e.target.value })} />
                 </div>
               )}
 
