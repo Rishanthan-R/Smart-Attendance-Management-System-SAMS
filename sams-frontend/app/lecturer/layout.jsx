@@ -43,24 +43,27 @@ export default function LecturerLayout({ children }) {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    const token = localStorage.getItem("sams_token");
-    const userStr = localStorage.getItem("sams_user");
-    
-    if (!token || !userStr) {
-      router.push("/auth/login");
-      return;
-    }
+    (async () => {
+      const token = localStorage.getItem("sams_token");
+      const userStr = localStorage.getItem("sams_user");
 
-    try {
-      const parsedUser = JSON.parse(userStr);
-      if (parsedUser.role !== "lecturer") {
+      if (!token || !userStr) {
         router.push("/auth/login");
         return;
       }
-      setUser(parsedUser);
-    } catch (err) {
-      router.push("/auth/login");
-    }
+
+      try {
+        const parsedUser = JSON.parse(userStr);
+        if (parsedUser.role !== "lecturer") {
+          router.push("/auth/login");
+          return;
+        }
+        setUser(parsedUser);
+      } catch (err) {
+        console.error(err);
+        router.push("/auth/login");
+      }
+    })();
   }, [router]);
 
   if (!user) {
@@ -69,7 +72,7 @@ export default function LecturerLayout({ children }) {
 
   // Determine Initials
   const nameParts = user.full_name ? user.full_name.split(" ") : ["L", "P"];
-  const initials = nameParts.length >= 2 
+  const initials = nameParts.length >= 2
     ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
     : `${nameParts[0][0]}`.toUpperCase();
 
@@ -77,13 +80,13 @@ export default function LecturerLayout({ children }) {
     { label: "Dashboard", href: "/lecturer", icon: <IconDashboard size={16} /> },
     { label: "Create Session", href: "/lecturer/sessions/create", icon: <IconCreateSession size={16} /> },
     { label: "My Sessions", href: "/lecturer/sessions", icon: <IconMySessions size={16} /> },
-    { label: "Profile", href: "/lecturer/profile", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg> }
+    { label: "Profile", href: "/lecturer/profile", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg> }
   ];
 
   return (
     <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
-      <Navbar 
-        portalLabel="LECTURER PORTAL" 
+      <Navbar
+        portalLabel="LECTURER PORTAL"
         navItems={navItems}
         userName={user.full_name || "Lecturer"}
         userRole="Lecturer"

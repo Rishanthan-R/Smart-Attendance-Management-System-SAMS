@@ -29,60 +29,60 @@ export default function LecturerProfilePage() {
     initials: ""
   });
 
-  const fetchProfile = async () => {
-    try {
-      const token = localStorage.getItem("sams_token");
-      const userStr = localStorage.getItem("sams_user");
-
-      if (!token || !userStr) {
-        router.push("/auth/login");
-        return;
-      }
-
-      const parsedUser = JSON.parse(userStr);
-
-      const res = await fetch("http://localhost:5000/api/auth/me", {
-        headers: { "Authorization": `Bearer ${token}` }
-      });
-      const data = await res.json();
-
-      if (res.ok) {
-        const profile = data.data.user.profile;
-
-        // Setup initials
-        const nameParts = profile.full_name ? profile.full_name.split(" ") : ["L", "P"];
-        const initials = nameParts.length >= 2
-          ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
-          : `${nameParts[0][0]}`.toUpperCase();
-
-        const formState = {
-          fullName: profile.full_name || "",
-          phoneNumber: profile.phone_number || "",
-          address: profile.address || ""
-        };
-
-        setFormData(formState);
-        setOriginalData(formState);
-
-        setReadOnlyData({
-          employeeId: profile.employee_id || "N/A",
-          department: profile.department || "N/A",
-          faculty: "Faculty of Computing",
-          email: parsedUser.email || "",
-          role: profile.role || "lecturer",
-          initials
-        });
-      }
-    } catch (err) {
-      console.error(err);
-      setErrorMsg("Failed to load profile data.");
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
-    fetchProfile();
+    let ignore = false;
+    (async () => {
+      try {
+        const token = localStorage.getItem("sams_token");
+        const userStr = localStorage.getItem("sams_user");
+
+        if (!token || !userStr) {
+          router.push("/auth/login");
+          return;
+        }
+
+        const parsedUser = JSON.parse(userStr);
+
+        const res = await fetch("http://localhost:5000/api/auth/me", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+
+        if (res.ok) {
+          const profile = data.data.user.profile;
+
+          const nameParts = profile.full_name ? profile.full_name.split(" ") : ["L", "P"];
+          const initials = nameParts.length >= 2
+            ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+            : `${nameParts[0][0]}`.toUpperCase();
+
+          const formState = {
+            fullName: profile.full_name || "",
+            phoneNumber: profile.phone_number || "",
+            address: profile.address || ""
+          };
+
+          if (!ignore) {
+            setFormData(formState);
+            setOriginalData(formState);
+            setReadOnlyData({
+              employeeId: profile.employee_id || "N/A",
+              department: profile.department || "N/A",
+              faculty: "Faculty of Computing",
+              email: parsedUser.email || "",
+              role: profile.role || "lecturer",
+              initials
+            });
+          }
+        }
+      } catch (err) {
+        console.error(err);
+        if (!ignore) setErrorMsg("Failed to load profile data.");
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+    return () => { ignore = true; };
   }, [router]);
 
   const handleDiscard = () => {
@@ -141,6 +141,7 @@ export default function LecturerProfilePage() {
         setTimeout(() => setSuccessMsg(""), 3000);
       }
     } catch (err) {
+      console.error(err);
       setErrorMsg("Could not connect to server.");
     } finally {
       setSaving(false);

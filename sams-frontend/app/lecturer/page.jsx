@@ -4,34 +4,34 @@ import Link from "next/link";
 
 const IconBook = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20"/>
+    <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
   </svg>
 );
 const IconCalendar = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
-    <line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/>
+    <rect x="3" y="4" width="18" height="18" rx="2" ry="2" />
+    <line x1="16" y1="2" x2="16" y2="6" /><line x1="8" y1="2" x2="8" y2="6" /><line x1="3" y1="10" x2="21" y2="10" />
   </svg>
 );
 const IconShield = () => (
   <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+    <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
   </svg>
 );
 const IconPlay = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <circle cx="12" cy="12" r="10"/><polygon points="10 8 16 12 10 16 10 8"/>
+    <circle cx="12" cy="12" r="10" /><polygon points="10 8 16 12 10 16 10 8" />
   </svg>
 );
 const IconList = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
-    <line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/>
+    <line x1="8" y1="6" x2="21" y2="6" /><line x1="8" y1="12" x2="21" y2="12" /><line x1="8" y1="18" x2="21" y2="18" />
+    <line x1="3" y1="6" x2="3.01" y2="6" /><line x1="3" y1="12" x2="3.01" y2="12" /><line x1="3" y1="18" x2="3.01" y2="18" />
   </svg>
 );
 const IconUser = () => (
   <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>
+    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" />
   </svg>
 );
 
@@ -42,9 +42,17 @@ export default function LecturerDashboard() {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    const userStr = localStorage.getItem("sams_user");
-    if (userStr) { setUser(JSON.parse(userStr)); }
-    const fetchDashboardData = async () => {
+    let ignore = false;
+    (async () => {
+      const userStr = localStorage.getItem("sams_user");
+      if (userStr) {
+        try {
+          if (!ignore) setUser(JSON.parse(userStr));
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
       try {
         const token = localStorage.getItem("sams_token");
         const headers = { "Authorization": `Bearer ${token}` };
@@ -52,12 +60,21 @@ export default function LecturerDashboard() {
           fetch("http://localhost:5000/api/lecturer/modules", { headers }),
           fetch("http://localhost:5000/api/sessions", { headers })
         ]);
-        if (modulesRes.ok) { const modData = await modulesRes.json(); setModules(modData.data.modules || []); }
-        if (sessionsRes.ok) { const sesData = await sessionsRes.json(); setSessions(sesData.data.sessions || []); }
-      } catch (err) { console.error("Error fetching dashboard data", err); }
-      finally { setLoading(false); }
-    };
-    fetchDashboardData();
+        if (modulesRes.ok) {
+          const modData = await modulesRes.json();
+          if (!ignore) setModules(modData.data.modules || []);
+        }
+        if (sessionsRes.ok) {
+          const sesData = await sessionsRes.json();
+          if (!ignore) setSessions(sesData.data.sessions || []);
+        }
+      } catch (err) {
+        console.error("Error fetching dashboard data", err);
+      } finally {
+        if (!ignore) setLoading(false);
+      }
+    })();
+    return () => { ignore = true; };
   }, []);
 
   if (loading || !user) {
