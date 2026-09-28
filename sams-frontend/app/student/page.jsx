@@ -52,6 +52,7 @@ export default function StudentDashboard() {
 
   useEffect(() => {
     const userStr = localStorage.getItem("sams_user");
+     // eslint-disable-next-line react-hooks/set-state-in-effect
     if (userStr) { setUser(JSON.parse(userStr)); }
     const fetchDashboardData = async () => {
       try {
