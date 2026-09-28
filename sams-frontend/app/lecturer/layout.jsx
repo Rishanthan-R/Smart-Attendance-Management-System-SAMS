@@ -1,57 +1,100 @@
 "use client";
-import React, { useState } from "react";
-import { usePathname } from "next/navigation";
-import { LecturerNavbar } from "../../components/lecturer/LecturerNavbar";
-import { Footer } from "../../components/layout/studentFooter";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import Navbar from "../../components/Navbar";
+import Footer from "../../components/Footer";
+
+// Simple icons for Lecturer nav
+function IconDashboard({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <rect x="3" y="3" width="7" height="7" />
+      <rect x="14" y="3" width="7" height="7" />
+      <rect x="14" y="14" width="7" height="7" />
+      <rect x="3" y="14" width="7" height="7" />
+    </svg>
+  );
+}
+
+function IconCreateSession({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10" />
+      <line x1="12" y1="8" x2="12" y2="16" />
+      <line x1="8" y1="12" x2="16" y2="12" />
+    </svg>
+  );
+}
+
+function IconMySessions({ size = 16 }) {
+  return (
+    <svg width={size} height={size} viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+      <polyline points="14 2 14 8 20 8" />
+      <line x1="16" y1="13" x2="8" y2="13" />
+      <line x1="16" y1="17" x2="8" y2="17" />
+      <polyline points="10 9 9 9 8 9" />
+    </svg>
+  );
+}
 
 export default function LecturerLayout({ children }) {
-  const pathname = usePathname();
-  const [notifications, setNotifications] = useState([
-    { id: 1, type: "info", title: "New session request received.", time: "1 hour ago" },
-    { id: 2, type: "warning", title: "Low attendance warning for Software Engineering.", time: "4 hours ago" }
-  ]);
+  const router = useRouter();
+  const [user, setUser] = useState(null);
 
-  // Determine active nav item
-  let activeNav = "dashboard";
-  if (pathname === "/lecturer/create-session" || pathname.startsWith("/lecturer/create-session/")) {
-    activeNav = "create-session";
-  } else if (pathname === "/lecturer/sessions" || pathname.startsWith("/lecturer/sessions/")) {
-    activeNav = "my-sessions";
-  } else if (pathname.startsWith("/lecturer/live-session/")) {
-    activeNav = "live-session";
-  } else if (pathname === "/lecturer/reports" || pathname.startsWith("/lecturer/reports/")) {
-    activeNav = "reports";
-  } else if (pathname === "/lecturer/profile") {
-    activeNav = "profile";
+  useEffect(() => {
+    (async () => {
+      const token = localStorage.getItem("sams_token");
+      const userStr = localStorage.getItem("sams_user");
+
+      if (!token || !userStr) {
+        router.push("/auth/login");
+        return;
+      }
+
+      try {
+        const parsedUser = JSON.parse(userStr);
+        if (parsedUser.role !== "lecturer") {
+          router.push("/auth/login");
+          return;
+        }
+        setUser(parsedUser);
+      } catch (err) {
+        console.error(err);
+        router.push("/auth/login");
+      }
+    })();
+  }, [router]);
+
+  if (!user) {
+    return <div style={{ minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", backgroundColor: "var(--cream)" }}>Loading...</div>;
   }
 
+  // Determine Initials
+  const nameParts = user.full_name ? user.full_name.split(" ") : ["L", "P"];
+  const initials = nameParts.length >= 2
+    ? `${nameParts[0][0]}${nameParts[1][0]}`.toUpperCase()
+    : `${nameParts[0][0]}`.toUpperCase();
+
+  const navItems = [
+    { label: "Dashboard", href: "/lecturer", icon: <IconDashboard size={16} /> },
+    { label: "Create Session", href: "/lecturer/sessions/create", icon: <IconCreateSession size={16} /> },
+    { label: "My Sessions", href: "/lecturer/sessions", icon: <IconMySessions size={16} /> },
+    { label: "Profile", href: "/lecturer/profile", icon: <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" /><circle cx="12" cy="7" r="4" /></svg> }
+  ];
+
   return (
-    <div style={{ background: "var(--cream)", minHeight: "100vh", display: "flex", flexDirection: "column" }}>
-      {/* Top Navbar */}
-      <LecturerNavbar 
-        activeNav={activeNav} 
-        notifications={notifications} 
-        setNotifications={setNotifications} 
-        lecturerName="Dr. J. Perera"
+    <div style={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
+      <Navbar
+        portalLabel="LECTURER PORTAL"
+        navItems={navItems}
+        userName={user.full_name || "Lecturer"}
+        userRole="Lecturer"
+        userInitials={initials}
       />
-
-      {/* Main Page Content Wrapper */}
-      <main 
-        style={{ 
-          maxWidth: "1200px", 
-          margin: "0 auto", 
-          padding: "108px 24px 64px 24px",
-          flex: 1,
-          width: "100%"
-        }}
-      >
-        {/* Entry page fade-in animation */}
-        <div style={{ animation: "fade-up 0.5s ease-out forwards" }}>
-          {children}
-        </div>
+      <main style={{ paddingTop: "72px", flex: 1, display: "flex", flexDirection: "column" }}>
+        {children}
       </main>
-
-      {/* Footer */}
       <Footer />
     </div>
   );

@@ -1,244 +1,114 @@
 "use client";
-import React, { useState } from "react";
-import SessionRow from "../../../components/lecturer/SessionRow";
-import ActionButton from "../../../components/lecturer/ActionButton";
-import { IconPlus, IconSearch } from "../../../components/ui/Icons";
+import { useState, useEffect } from "react";
+import Link from "next/link";
 
-export default function SessionsPage() {
-  const [filter, setFilter] = useState("all"); // "all" | "active" | "completed"
-  const [courseFilter, setCourseFilter] = useState("all");
-  const [dateSearch, setDateSearch] = useState("");
+export default function SessionHistoryPage() {
+  const [sessions, setSessions] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const sessionsData = [
-    {
-      id: "itc-3140-se",
-      code: "ITC 3140",
-      name: "Software Engineering Project",
-      date: "July 15, 2026",
-      time: "10:00 AM - 12:00 PM",
-      location: "Hall FOC-01",
-      present: 124,
-      total: 150,
-      status: "Live"
-    },
-    {
-      id: "itc-3250-db-1",
-      code: "ITC 3250",
-      name: "Database Systems",
-      date: "July 13, 2026",
-      time: "01:00 PM - 03:00 PM",
-      location: "Hall FOC-02",
-      present: 158,
-      total: 180,
-      status: "Completed"
-    },
-    {
-      id: "itc-3140-se-2",
-      code: "ITC 3140",
-      name: "Software Engineering Project",
-      date: "July 12, 2026",
-      time: "10:00 AM - 12:00 PM",
-      location: "Hall FOC-01",
-      present: 135,
-      total: 150,
-      status: "Completed"
-    },
-    {
-      id: "itc-3320-cn-1",
-      code: "ITC 3320",
-      name: "Computer Networks",
-      date: "July 09, 2026",
-      time: "08:00 AM - 10:00 AM",
-      location: "Hall FOC-01",
-      present: 110,
-      total: 150,
-      status: "Completed"
-    },
-    {
-      id: "itc-3250-db-2",
-      code: "ITC 3250",
-      name: "Database Systems",
-      date: "July 06, 2026",
-      time: "01:00 PM - 03:00 PM",
-      location: "Hall FOC-02",
-      present: 145,
-      total: 180,
-      status: "Completed"
-    }
-  ];
+  useEffect(() => {
+    const fetchSessions = async () => {
+      try {
+        const token = localStorage.getItem("sams_token");
+        const res = await fetch("http://localhost:5000/api/sessions", {
+          headers: { "Authorization": `Bearer ${token}` }
+        });
+        const data = await res.json();
+        
+        if (res.ok) {
+          setSessions(data.data.sessions || []);
+        }
+      } catch (err) {
+        console.error("Failed to fetch sessions", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchSessions();
+  }, []);
 
-  // Filtering & searching 
-  const filteredSessions = sessionsData.filter((s) => {
-    const matchesCourse =
-      courseFilter === "all" || s.code === courseFilter;
-
-    const matchesDate =
-      s.date.toLowerCase().includes(dateSearch.toLowerCase());
-
-    let matchesState = true;
-    if (filter === "active") matchesState = s.status.toLowerCase() === "live";
-    else if (filter === "completed") matchesState = s.status.toLowerCase() === "completed";
-
-    return matchesCourse && matchesDate && matchesState;
-  });
+  if (loading) return <div style={{ padding: "48px", textAlign: "center" }}>Loading history...</div>;
 
   return (
-    <div style={{ display: "flex", flexDirection: "column", gap: "32px" }}>
-      {/* Page Header */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "20px",
-          borderBottom: "1px solid var(--border)",
-          paddingBottom: "24px"
-        }}
-      >
-        <div>
-          <span className="section-label" style={{ marginBottom: "6px", display: "block" }}>Attendance Registry</span>
-          <h1 className="dashboard-heading" style={{ fontSize: "2.2rem" }}>
-            Session <em>Log</em>
-          </h1>
-          <p style={{ color: "var(--ink-muted)", fontSize: "14px", marginTop: "4px", fontWeight: 300 }}>
-            Browse active geofenced rosters, export historic logs, and review statistics.
-          </p>
-        </div>
-        <ActionButton variant="gold" href="/lecturer/create-session">
-          <IconPlus size={12} />
-          Start New Session
-        </ActionButton>
+    <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "48px 24px", width: "100%" }}>
+      {/* Header */}
+      <div style={{ marginBottom: "40px" }}>
+        <div className="section-label">ATTENDANCE HISTORY</div>
+        <h1 className="section-heading">My <em>Sessions</em></h1>
+        <p className="section-body" style={{ marginTop: "8px" }}>
+          Review past attendance sessions and active live sessions.
+        </p>
       </div>
 
-      {/* Filter and Search Bar */}
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          flexWrap: "wrap",
-          gap: "20px",
-          background: "var(--cream-dark)",
-          padding: "16px 20px",
-          border: "1px solid var(--border)"
-        }}
-      >
-        {/* State filters */}
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button
-            onClick={() => setFilter("all")}
-            className="nav-link"
-            style={{
-              color: filter === "all" ? "var(--gold-dark)" : "var(--ink-muted)",
-              fontWeight: 600,
-              fontSize: "10px",
-              padding: "4px 8px",
-              background: "none",
-              border: "none",
-              cursor: "pointer"
-            }}
-          >
-            All Sessions
-          </button>
-          <span style={{ color: "var(--border)" }}>|</span>
-          <button
-            onClick={() => setFilter("active")}
-            className="nav-link"
-            style={{
-              color: filter === "active" ? "var(--gold-dark)" : "var(--ink-muted)",
-              fontWeight: 600,
-              fontSize: "10px",
-              padding: "4px 8px",
-              background: "none",
-              border: "none",
-              cursor: "pointer"
-            }}
-          >
-            Active
-          </button>
-          <span style={{ color: "var(--border)" }}>|</span>
-          <button
-            onClick={() => setFilter("completed")}
-            className="nav-link"
-            style={{
-              color: filter === "completed" ? "var(--gold-dark)" : "var(--ink-muted)",
-              fontWeight: 600,
-              fontSize: "10px",
-              padding: "4px 8px",
-              background: "none",
-              border: "none",
-              cursor: "pointer"
-            }}
-          >
-            Completed
-          </button>
-        </div>
-
-        {/* Filter Controls Group */}
-        <div style={{ display: "flex", gap: "12px", flexWrap: "wrap", alignItems: "center", flex: "1 1 auto", justifyContent: "flex-end" }}>
-
-
-
-          {/* Course Dropdown */}
-          <select
-            value={courseFilter}
-            onChange={(e) => setCourseFilter(e.target.value)}
-            className="form-input form-select"
-            style={{ width: "160px", height: "40px", fontSize: "13px", padding: "0 36px 0 16px" }}
-          >
-            <option value="all">All Courses</option>
-            <option value="ITC 3140">ITC 3140</option>
-            <option value="ITC 3250">ITC 3250</option>
-            <option value="ITC 3320">ITC 3320</option>
-          </select>
-
-          {/* Date Search Input */}
-          <div style={{ position: "relative", width: "100%", maxWidth: "180px", minWidth: "140px" }}>
-            <input
-              type="text"
-              placeholder="Search by date..."
-              value={dateSearch}
-              onChange={(e) => setDateSearch(e.target.value)}
-              className="form-input"
-              style={{ paddingLeft: "40px", height: "40px", fontSize: "13px" }}
-            />
-            <span style={{ position: "absolute", left: "14px", top: "50%", transform: "translateY(-50%)", color: "var(--ink-light)" }}>
-              <IconSearch size={14} />
-            </span>
+      {/* Data Table Card */}
+      <div style={{ backgroundColor: "var(--white)", border: "1px solid var(--border)", borderRadius: "var(--radius)" }}>
+        <div style={{ padding: "24px 32px", borderBottom: "1px solid var(--border)", display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+          <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.6rem", color: "var(--ink)", fontWeight: 500 }}>Session Log</h3>
+          <div style={{ display: "flex", gap: "12px" }}>
+            <button className="btn-outline-ink" style={{ padding: "8px 16px", fontSize: "9px" }} disabled>FILTER</button>
           </div>
         </div>
-      </div>
 
-      {/* Sessions list */}
-      <div>
-        {filteredSessions.length === 0 ? (
-          <div
-            className="dashboard-card"
-            style={{
-              textAlign: "center",
-              padding: "56px 0",
-              color: "var(--ink-light)",
-              fontStyle: "italic"
-            }}
-          >
-            No sessions matching the selected filter criteria.
+        {sessions.length === 0 ? (
+          <div style={{ padding: "64px", textAlign: "center" }}>
+            <div style={{ color: "var(--ink-light)", marginBottom: "16px" }}>
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z" />
+                <polyline points="14 2 14 8 20 8" />
+                <line x1="16" y1="13" x2="8" y2="13" />
+                <line x1="16" y1="17" x2="8" y2="17" />
+                <polyline points="10 9 9 9 8 9" />
+              </svg>
+            </div>
+            <h3 style={{ fontFamily: "'Cormorant Garamond', serif", fontSize: "1.5rem", color: "var(--ink)", marginBottom: "8px" }}>No sessions found</h3>
+            <p style={{ color: "var(--ink-muted)", fontSize: "14px", marginBottom: "24px" }}>You have not created any attendance sessions yet.</p>
+            <Link href="/lecturer/sessions/create" className="btn-ink">Create First Session</Link>
           </div>
         ) : (
-          filteredSessions.map((s) => (
-            <SessionRow
-              key={s.id}
-              id={s.id}
-              code={s.code}
-              name={s.name}
-              date={s.date}
-              time={s.time}
-              location={s.location}
-              present={s.present}
-              total={s.total}
-              status={s.status}
-            />
-          ))
+          <div style={{ overflowX: "auto" }}>
+            <table style={{ width: "100%", borderCollapse: "collapse", textAlign: "left" }}>
+              <thead>
+                <tr style={{ backgroundColor: "rgba(26, 23, 20, 0.02)" }}>
+                  <th style={{ padding: "16px 32px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.15em", color: "var(--ink-light)" }}>DATE & TIME</th>
+                  <th style={{ padding: "16px 32px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.15em", color: "var(--ink-light)" }}>MODULE</th>
+                  <th style={{ padding: "16px 32px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.15em", color: "var(--ink-light)" }}>STATUS</th>
+                  <th style={{ padding: "16px 32px", fontFamily: "'Montserrat', sans-serif", fontSize: "9px", fontWeight: 600, letterSpacing: "0.15em", color: "var(--ink-light)", textAlign: "right" }}>ACTIONS</th>
+                </tr>
+              </thead>
+              <tbody>
+                {sessions.map(s => {
+                  const d = new Date(s.created_at);
+                  return (
+                    <tr key={s.id} style={{ borderBottom: "1px solid var(--border)" }}>
+                      <td style={{ padding: "16px 32px" }}>
+                        <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--ink)" }}>{d.toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                        <div style={{ fontSize: "12px", color: "var(--ink-muted)" }}>{d.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                      </td>
+                      <td style={{ padding: "16px 32px" }}>
+                        <div style={{ fontSize: "14px", fontWeight: 500, color: "var(--ink)" }}>{s.modules?.name}</div>
+                        <div style={{ fontSize: "12px", color: "var(--ink-muted)" }}>{s.modules?.code}</div>
+                      </td>
+                      <td style={{ padding: "16px 32px" }}>
+                        {s.status === 'active' ? (
+                          <span style={{ display: "inline-block", padding: "4px 10px", backgroundColor: "rgba(184, 150, 90, 0.1)", color: "var(--gold-dark)", fontSize: "11px", fontWeight: 600, borderRadius: "2px", textTransform: "uppercase" }}>Active</span>
+                        ) : (
+                          <span style={{ display: "inline-block", padding: "4px 10px", backgroundColor: "var(--cream-dark)", color: "var(--ink-muted)", fontSize: "11px", fontWeight: 600, borderRadius: "2px", textTransform: "uppercase" }}>Closed</span>
+                        )}
+                      </td>
+                      <td style={{ padding: "16px 32px", textAlign: "right" }}>
+                        <Link href={`/lecturer/sessions/${s.id}`} style={{ display: "inline-flex", alignItems: "center", justifyContent: "center", width: "32px", height: "32px", borderRadius: "2px", border: "1px solid var(--border)", color: "var(--ink)", transition: "all 0.2s", textDecoration: "none" }}>
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M5 12h14"></path>
+                            <path d="m12 5 7 7-7 7"></path>
+                          </svg>
+                        </Link>
+                      </td>
+                    </tr>
+                  );
+                })}
+              </tbody>
+            </table>
+          </div>
         )}
       </div>
     </div>
