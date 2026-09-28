@@ -74,6 +74,7 @@ export default function CreateSessionPage() {
 
           router.push(`/lecturer/sessions/${data.data.id}`);
         } catch (err) {
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
           setErrorMsg("Could not connect to server.");
           setSubmitting(false);
         }

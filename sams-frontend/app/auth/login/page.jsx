@@ -40,6 +40,7 @@ export default function LoginPage() {
       else if (role === "lecturer") router.push("/lecturer");
       else router.push("/");
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setErrorMsg("Could not connect to server. Please try again.");
       setLoading(false);
     }
