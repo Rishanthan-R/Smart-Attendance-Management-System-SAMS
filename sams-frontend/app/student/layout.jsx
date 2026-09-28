@@ -55,6 +55,7 @@ function IconProfile({ size = 16 }) {
 }
 
 export default function StudentLayout({ children }) {
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
   const [user, setUser] = useState(null);
 
@@ -73,8 +74,10 @@ export default function StudentLayout({ children }) {
         router.push("/auth/login");
         return;
       }
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setUser(parsedUser);
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       router.push("/auth/login");
     }
   }, [router]);

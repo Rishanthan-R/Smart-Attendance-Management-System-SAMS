@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import ActionButton from "../../../components/lecturer/ActionButton";
 import StatusBadge from "../../../components/lecturer/StatusBadge";
-import { IconSearch, IconUpload, IconCheck, IconAlertCircle } from "../../../components/ui/Icons";
+import { IconSearch, IconUpload, IconCheck } from "../../../components/ui/Icons";
 
 export default function AttendanceHistoryPage() {
   const [searchQuery, setSearchQuery] = useState("");

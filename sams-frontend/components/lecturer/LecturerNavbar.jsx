@@ -24,7 +24,7 @@ const NOTIF_STYLES = {
   warning: { bg: "#fffbeb", border: "#fde68a", icon: <IconAlertCircle size={15} />, iconColor: "#b45309" },
 };
 
-export function LecturerNavbar({ activeNav, notifications = [], setNotifications, lecturerName = "Dr. Smith", department = "Computing" }) {
+export function LecturerNavbar({ activeNav, notifications = [], setNotifications, lecturerName = "Dr. Smith" }) {
   const [notifOpen, setNotifOpen] = useState(false);
   const notifRef = useRef(null);
 

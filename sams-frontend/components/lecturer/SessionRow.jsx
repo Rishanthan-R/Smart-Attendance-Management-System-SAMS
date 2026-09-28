@@ -2,7 +2,7 @@
 import React from "react";
 import StatusBadge from "./StatusBadge";
 import ActionButton from "./ActionButton";
-import { IconArrow, IconDownload } from "../ui/Icons";
+import { IconDownload } from "../ui/Icons";
 
 export default function SessionRow({ 
   id,

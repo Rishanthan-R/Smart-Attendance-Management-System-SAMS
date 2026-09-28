@@ -37,6 +37,7 @@ export default function AdminLoginPage() {
 
       router.push("/admin");
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setErrorMsg("Could not connect to server. Please try again.");
       setLoading(false);
     }

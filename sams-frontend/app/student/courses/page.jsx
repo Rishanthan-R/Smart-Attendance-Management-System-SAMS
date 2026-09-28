@@ -1,9 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 
 export default function StudentCourses() {
-  const router = useRouter();
   const [modules, setModules] = useState([]);
   const [loading, setLoading] = useState(true);
   const [enrolling, setEnrolling] = useState(null);
@@ -27,6 +25,7 @@ export default function StudentCourses() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchModules();
   }, []);
 

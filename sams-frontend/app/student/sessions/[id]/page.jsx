@@ -34,6 +34,7 @@ export default function StudentAttendancePage() {
           setError("Session not found or access denied.");
         }
       } catch (err) {
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         setError("Error connecting to server.");
       } finally {
         setLoading(false);
@@ -70,7 +71,7 @@ export default function StudentAttendancePage() {
     return () => clearInterval(interval);
   }, [session]);
 
-  const requestLocation = () => {
+  function requestLocation() {
     setLocationError(null);
     if (!navigator.geolocation) {
       setLocationError("Geolocation is not supported by your browser.");
@@ -132,6 +133,7 @@ export default function StudentAttendancePage() {
         setError(data.message || "Failed to mark attendance.");
       }
     } catch (err) {
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       setError("Network error. Please try again.");
     } finally {
       setSubmitting(false);
